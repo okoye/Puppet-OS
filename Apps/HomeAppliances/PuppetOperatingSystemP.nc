@@ -34,12 +34,13 @@ implementation
   void initializeHardware();//setup timer, radio elements
   void initializeSoftware();
   void debugLeds(int status);
-  bool readConfig(config_data_t* info); //reads config data from storage.
+  bool configureSystem(config_data_t* info); //reads config data from storage.
 
   
   bool ready = 0; //set whenever all initialization is complete.
   bool mount_completed = 0; //set when drives are successfully mounted
-  config_data_t* my_config = (config_data_t*)malloc(sizeof(config_data_t));
+
+  config_data_t my_config;
 
   /******************************************
             Events Implementation
@@ -53,28 +54,49 @@ implementation
 
   event void Mount.mountDone(error_t error)
   {
-     atomic
-     {
-      if (error == SUCCESS)
+    if (error == SUCCESS)
+    {
+      mount_completed = 1;
+      if(call Config.valid() == TRUE)//Has some config data on it.
       {
-        if(call Config.valid() == TRUE)//Has some config data on it.
-        {
-          if(call Config.read(CONFIG_ADDR,
-                    my_config,sizeof(config_data_t)) != SUCCESS)
-          {
-            
-          }
-        }
-        else //Need to commit some data
-        {
-          
-        }
+        post readConfigInfo();
       }
-      else
+      else //Need to commit some data
       {
-        post mountDrives();
+        configureSystem();
       }
-     }
+    }
+    else
+    {
+        //TODO: Fatal Error. Log Error.
+    }
+  }
+
+  event void Config.readDone(storage_addr_t addr, void* buf,
+    storage_len_t len, error_t err)__attribute__((noinline))
+  {
+    if(err == SUCCESS)
+    {
+      memcpy(&my_config,buf,len);
+      if (my_config.version != CONFIG_VERSION)
+      {
+        //TODO: Warn with LEDS.
+      }
+      post writeConfigInfo();
+    }
+  }
+
+  event void Config.writeDone(storage_addr_t addr, void *buf,
+    storage_len_t len, error_t err)
+  {
+    if(err == SUCCESS)
+    {
+      post commitConfigInfo();
+    }
+    else
+    {
+      post writeConfigInfo(); //TODO: Log info.
+    }
   }
 
   /*******************************************
@@ -84,8 +106,35 @@ implementation
   {
     if (call Mount.mount() != SUCCESS)
     {
-      post mountDrives();
+      //TODO: Fatal Error. Log Error.
     }
+  }
+
+  task void readConfigInfo()
+  {
+    error_t result = Config.read(CONFIG_ADDR,&my_config,sizeof(my_config));
+    if (result != SUCCESS)
+    {
+      if (result == EBUSY)
+      {
+        post readConfigInfo();
+      }
+      else
+      {
+        //TODO: Log error to LEDS.
+      }
+    }
+  }
+
+  task void writeConfigInfo()
+  {
+    call Config.write(CONFIG_ADDR, &my_config, sizeof(my_config));
+  }
+
+  task void commitConfigInfo()
+  {
+    if (Config.commit() != SUCCESS)
+      post commitConfigInfo();
   }
   /*******************************************
             C Function Implementation
@@ -108,12 +157,12 @@ implementation
     */
   }
 
-  bool readConfig(config_data_t* info)
+  bool configureSystem(config_data_t* info)
   {
     /*
-    Reads config information from storage and stores
-    in config_data_t object.
+    Configure system information
     */
-    
+    //First, generate unique node id.
+    info->node_id =
   }
 }
