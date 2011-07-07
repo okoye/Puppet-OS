@@ -34,7 +34,9 @@ implementation
   void initializeSoftware();
   void debugLeds(int status);
   bool configureSystem(config_data_t* info); //reads config data from storage.
-
+  task void readConfigInfo();
+  task void writeConfigInfo();
+  task void commitConfigInfo();
   
   bool ready = 0; //set whenever all initialization is complete.
   bool mount_completed = 0; //set when drives are successfully mounted
@@ -47,8 +49,8 @@ implementation
   event void Boot.booted()
   {
     //TODO: perform initialization of hardware & software.
-    initialize_hardware();
-    initialize_software();
+    initializeHardware();
+    initializeSoftware();
   }
 
   event void Mount.mountDone(error_t error)
@@ -62,7 +64,7 @@ implementation
       }
       else //Need to commit some data
       {
-        configureSystem();
+        configureSystem(&my_config);
       }
     }
     else
@@ -104,6 +106,26 @@ implementation
       post commitConfigInfo(); //TODO: Log info
   }
 
+  event void RadioControl.startDone(error_t error)
+  {
+    //TODO implement
+  }
+
+  event void RadioControl.stopDone(error_t error)
+  {
+    //TODO: implement
+  }
+
+  event void PuppetDatastoreTimer.fired()
+  {
+    //TODO: implement
+  }
+
+  event void SenseTimer.fired()
+  {
+    //TODO: implement
+  }
+
   /*******************************************
               Task Definitions
   ********************************************/
@@ -117,7 +139,7 @@ implementation
 
   task void readConfigInfo()
   {
-    error_t result = Config.read(CONFIG_ADDR,&my_config,sizeof(my_config));
+    error_t result = call Config.read(CONFIG_ADDR,&my_config,sizeof(my_config));
     if (result != SUCCESS)
     {
       if (result == EBUSY)
@@ -138,7 +160,7 @@ implementation
 
   task void commitConfigInfo()
   {
-    if (Config.commit() != SUCCESS)
+    if (call Config.commit() != SUCCESS)
       post commitConfigInfo();
   }
   /*******************************************
@@ -168,8 +190,8 @@ implementation
     Configure system information
     */
     //First, generate unique node id.
-    info->node_id =
-
+    //info->node_id =
+    return true;
     //Next, encode requests using HTTP Framework & Avro.
   }
 }
