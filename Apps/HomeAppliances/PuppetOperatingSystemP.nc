@@ -24,23 +24,25 @@ module PuppetOperatingSystemP
     interface Timer<TMilli> as SenseTimer; //For sensors needing polling
     interface Timer<TMilli> as PuppetDatastoreTimer;//Update cloud datastore
     interface SplitControl as RadioControl;
-    interface ConfigStorage;
+    interface ConfigStorage as Config;
     interface Mount;
     interface Leds;
   }
 }
 implementation
 {
-  void initialize_hardware();//setup timer, radio elements
-  void initialize_software();
-  void debug_leds(int status);
-  bool read_config(config_data_t* info); //reads config data from storage.
+  void initializeHardware();//setup timer, radio elements
+  void initializeSoftware();
+  void debugLeds(int status);
+  bool readConfig(config_data_t* info); //reads config data from storage.
 
   
-  bool ready = false; //set whenever all initialization is complete.
-  
+  bool ready = 0; //set whenever all initialization is complete.
+  bool mount_completed = 0; //set when drives are successfully mounted
+  config_data_t* my_config = (config_data_t*)malloc(sizeof(config_data_t));
+
   /******************************************
-            Events Definition
+            Events Implementation
   ******************************************/
   event void Boot.booted()
   {
@@ -49,34 +51,64 @@ implementation
     initialize_software();
   }
 
+  event void Mount.mountDone(error_t error)
+  {
+     atomic
+     {
+      if (error == SUCCESS)
+      {
+        if(call Config.valid() == TRUE)//Has some config data on it.
+        {
+          if(call Config.read(CONFIG_ADDR,
+                    my_config,sizeof(config_data_t)) != SUCCESS)
+          {
+            
+          }
+        }
+        else //Need to commit some data
+        {
+          
+        }
+      }
+      else
+      {
+        post mountDrives();
+      }
+     }
+  }
+
   /*******************************************
-            C Function Definitions
+              Task Definitions
+  ********************************************/
+  task void mountDrives()
+  {
+    if (call Mount.mount() != SUCCESS)
+    {
+      post mountDrives();
+    }
+  }
+  /*******************************************
+            C Function Implementation
   ********************************************/
 
-  void initialize_hardware()
+  void initializeHardware()
   {
     /*
     Initialize flash drive, timer, sensors and 
     */
-    post 
+    post mountDrives();
   }
 
-  void initialize_software()
+  void initializeSoftware()
   {
     /*
     Platform should check that it has received a unique identification
     from cloud platform. This ID is used to identify, manage and communicate
     with the sensing platform.
     */
-    config_data_t* my_config;
-
-    //First, we want to read config information from log
-    
-    read_config(&my_config);
-
   }
 
-  bool read_config(config_data_t* info)
+  bool readConfig(config_data_t* info)
   {
     /*
     Reads config information from storage and stores
@@ -84,5 +116,4 @@ implementation
     */
     
   }
-
 }
