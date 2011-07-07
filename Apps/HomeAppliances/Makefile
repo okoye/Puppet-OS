@@ -1,0 +1,3 @@
+COMPONENT=PuppetOperatingSystemC
+include $(MAKERULES)
+
