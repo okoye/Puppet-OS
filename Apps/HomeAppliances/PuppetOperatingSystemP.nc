@@ -13,14 +13,13 @@
  */
 
 #include "PuppetOperatingSystem.h"
-#include "StorageVolumes.h"
 
 module PuppetOperatingSystemP
 {
   uses
   {
     interface Boot;
-    interface Read<uint16_t>; //TODO: Hide this interface
+    //interface Read<uint16_t>; //TODO: Hide this interface
     interface Timer<TMilli> as SenseTimer; //For sensors needing polling
     interface Timer<TMilli> as PuppetDatastoreTimer;//Update cloud datastore
     interface SplitControl as RadioControl;
@@ -99,6 +98,12 @@ implementation
     }
   }
 
+  event void Config.commitDone(error_t error)
+  {
+    if(error != SUCCESS)
+      post commitConfigInfo(); //TODO: Log info
+  }
+
   /*******************************************
               Task Definitions
   ********************************************/
@@ -164,5 +169,7 @@ implementation
     */
     //First, generate unique node id.
     info->node_id =
+
+    //Next, encode requests using HTTP Framework & Avro.
   }
 }
