@@ -40,6 +40,8 @@ implementation
   
   bool ready = 0; //set whenever all initialization is complete.
   bool mount_completed = 0; //set when drives are successfully mounted
+  int error_counts = 1;
+  int success_counts = 0;
 
   config_data_t my_config;
 
@@ -58,6 +60,7 @@ implementation
     if (error == SUCCESS)
     {
       mount_completed = 1;
+      debugLeds(success_counts+2);
       if(call Config.valid() == TRUE)//Has some config data on it.
       {
         post readConfigInfo();
@@ -69,7 +72,7 @@ implementation
     }
     else
     {
-        //TODO: Fatal Error. Log Error.
+        debugLeds(error_counts+2);
     }
   }
 
@@ -78,10 +81,11 @@ implementation
   {
     if(err == SUCCESS)
     {
+      debugLeds(success_counts+2);
       memcpy(&my_config,buf,len);
       if (my_config.version != CONFIG_VERSION)
       {
-        //TODO: Warn with LEDS.
+        debugLeds(error_counts+2);
       }
       post writeConfigInfo();
     }
@@ -92,18 +96,27 @@ implementation
   {
     if(err == SUCCESS)
     {
+      debugLeds(success_counts+2);
       post commitConfigInfo();
     }
     else
     {
-      post writeConfigInfo(); //TODO: Log info.
+      post writeConfigInfo();
+      debugLeds(PUPPET_FAIL);
     }
   }
 
   event void Config.commitDone(error_t error)
   {
     if(error != SUCCESS)
-      post commitConfigInfo(); //TODO: Log info
+    {
+      post commitConfigInfo(); 
+      debugLeds(PUPPET_FAIL);
+    }
+    else
+    {
+      debugLeds(PUPPET_FINISH);
+    }
   }
 
   event void RadioControl.startDone(error_t error)
@@ -133,7 +146,7 @@ implementation
   {
     if (call Mount.mount() != SUCCESS)
     {
-      //TODO: Fatal Error. Log Error.
+      debugLeds(PUPPET_FAIL);
     }
   }
 
@@ -148,7 +161,7 @@ implementation
       }
       else
       {
-        //TODO: Log error to LEDS.
+        debugLeds(PUPPET_FAIL);
       }
     }
   }
@@ -193,5 +206,10 @@ implementation
     //info->node_id =
     return true;
     //Next, encode requests using HTTP Framework & Avro.
+  }
+
+  void debugLeds(int status)
+  {
+    call Leds.set(status);
   }
 }

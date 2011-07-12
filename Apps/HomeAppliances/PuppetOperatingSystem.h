@@ -14,7 +14,10 @@ enum
 enum
 {
   true = 1,
-  false = 0
+  false = 0,
+  PUPPET_SUCCESS = 0x2,
+  PUPPET_FAIL = 0x1,
+  PUPPET_FINISH = 0x4
 };
 
 
