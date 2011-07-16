@@ -14,7 +14,7 @@ implementation
 {
   event void TestWriteConfig.run()
   {
-    call PuppetConfigurator.write(NULL);
+    call PuppetConfigurator.writeConfig(NULL);
   }
   event void TestReadConfig.run()
   {
