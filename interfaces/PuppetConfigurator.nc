@@ -22,9 +22,11 @@ interface PuppetConfigurator
    *Signaled after configure command finishes execution
    *
    *@return config_data_t* data, if config data was found, it returns
-            the config data. Otherwise will return NULL
+            the config data. Otherwise will return NULL. If an error 
+            occured during configuration, err will be a FAIL otherwise
+            it should be a success.
    */
-  event void configureDone(config_data_t* data);
+  event void configureDone(error_t err, config_data_t* data);
 
   /**
    *Signaled after a writeConfig command has completed.

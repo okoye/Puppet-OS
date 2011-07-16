@@ -6,4 +6,13 @@ typedef struct config_data
   uint16_t node_id; //randomly assigned node id.
   uint16_t version; //configuration version.
 }config_data_t;
+
+enum
+{
+  //state definitions
+  MOUNTED = 1,
+  READ = 2,
+  WRITTEN = 3,
+  FINISHED = 4
+};
 #endif
