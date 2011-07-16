@@ -1,3 +1,5 @@
+#include "PuppetConfiguration.h"
+
 interface PuppetConfigurator
 {
   /**
