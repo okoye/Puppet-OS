@@ -24,7 +24,9 @@ interface PuppetConfigurator
    *@return config_data_t* data, if config data was found, it returns
             the config data. Otherwise will return NULL. If an error 
             occured during configuration, err will be a FAIL otherwise
-            it should be a success.
+            it should be a success. Note, if no config data is present,
+            it will return a SUCCESS but with NULL as data. It can also
+            return EBUSY if a request is already being processed.
    */
   event void configureDone(error_t err, config_data_t* data);
 

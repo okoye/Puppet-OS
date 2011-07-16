@@ -15,4 +15,10 @@ enum
   WRITTEN = 3,
   FINISHED = 4
 };
+
+enum
+{
+  //some important constants
+  CONFIG_ADDRESS = 0;
+}
 #endif
