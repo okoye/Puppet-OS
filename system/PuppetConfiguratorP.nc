@@ -21,12 +21,13 @@ implementation
   void signalReadCompletion(error_t err, config_data_t*);
   void signalWriteCompletion(error_t err);
 
-  config_data_t* config = (config_data_t*)malloc(sizeof(config_data_t));
+  config_data_t* config = NULL;
 
   async command error_t PuppetConfigurator.configure()
   {
     error_t status = FAIL;
     
+    config = (config_data_t*)malloc(sizeof(config_data_t));
     call Mount.mount();//fail if it has already been mounted.
     
   }
