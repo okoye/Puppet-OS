@@ -19,6 +19,6 @@ enum
 enum
 {
   //some important constants
-  CONFIG_ADDRESS = 0
+  CONFIG_ADDRESS = 0 //address to start reading from disk
 };
 #endif

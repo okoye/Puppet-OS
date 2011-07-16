@@ -79,7 +79,7 @@ implementation
     {
       //go to final state FINISHED
       memcpy(config,buf,len);
-      signalCompletion(SUCCESS, config);
+      signalReadCompletion(SUCCESS, config);
     }
     else
     {
@@ -91,7 +91,7 @@ implementation
   {
     //just to be safe, remount incase it is not mounted
     call Mount.mount();
-    call Config.write(CONFIG_ADDR, data, sizeof(*data));
+    call Config.write(CONFIG_ADDRESS, data, sizeof(*data));
   }
 
   event void Config.writeDone(storage_addr_t addr, void *buf,
@@ -127,32 +127,32 @@ implementation
 
   task void signalReadFailure()
   {
-    signal PuppetConfiguration.configureDone(FAIL, config);
+    signal PuppetConfigurator.configureDone(FAIL, config);
   }
 
   task void signalReadSuccess()
   {
-    signal PuppetConfiguration.configureDone(SUCCESS, config);
+    signal PuppetConfigurator.configureDone(SUCCESS, config);
   }
 
   task void signalReadTemporalError()
   {
-    signal PuppetConfiguration.configureDone(EBUSY, config);
+    signal PuppetConfigurator.configureDone(EBUSY, config);
   }
 
   task void signalWriteFailure()
   {
-    signal PuppetConfiguration.writeConfigDone(FAIL);
+    signal PuppetConfigurator.writeConfigDone(FAIL);
   }
 
   task void signalWriteSuccess()
   {
-    signal PuppetConfiguration.writeConfigDone(SUCCESS);
+    signal PuppetConfigurator.writeConfigDone(SUCCESS);
   }
 
   task void signalWriteTemporalError()
   {
-    signal PuppetConfiguration.writeConfigDone(EBUSY);
+    signal PuppetConfigurator.writeConfigDone(EBUSY);
   }
 
   void signalReadCompletion(error_t err, config_data_t* ptr)
