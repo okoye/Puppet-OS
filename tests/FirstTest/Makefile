@@ -1,0 +1,2 @@
+COMPONENT = FirstTestC
+include $(MAKERULES)
