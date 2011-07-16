@@ -98,10 +98,29 @@ implementation
   {
     if(err == SUCCESS)
     {
+      //now commit data
+      error_t result = call Config.commit();
+      
+      if(result == EBUSY)
+        signalWriteCompletion(EBUSY);
+      else
+        signalWriteCompletion(FAIL);
     }
     else
     {
-      signalCompletion(
+      signalWriteCompletion(FAIL);
+    }
+  }
+
+  event void Config.commitDone(error_t err)
+  {
+    if (err ==  SUCCESS)
+    {
+      signalWriteCompletion(SUCCESS);
+    }
+    else
+    {
+      signalWriteCompletion(FAIL);
     }
   }
 
