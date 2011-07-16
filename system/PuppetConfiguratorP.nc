@@ -9,7 +9,7 @@
 
 module PuppetConfiguratorP
 {
-  provides interface PuppetConfiguration;
+  provides interface PuppetConfigurator;
   uses
   {
     interface ConfigStorage as Config;
