@@ -20,5 +20,5 @@ enum
 {
   //some important constants
   CONFIG_ADDRESS = 0
-}
+};
 #endif

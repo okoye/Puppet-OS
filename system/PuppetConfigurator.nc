@@ -1,4 +1,4 @@
-#include "PuppetConfiguration.h"
+#include <PuppetConfiguration.h>
 
 interface PuppetConfigurator
 {
