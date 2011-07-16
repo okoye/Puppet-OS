@@ -22,13 +22,13 @@ implementation
   }
   event void PuppetConfigurator.configureDone(error_t err, config_data_t* c)
   {
-    assertEquals("err was FAIL", SUCCESS, err);
+    assertTrue("err was FAIL", SUCCESS == err);
     assertNull(c);
     call TestReadConfig.done();
   }
   event void PuppetConfigurator.writeConfigDone(error_t err)
   {
-    assertEquals("failed to write", SUCCESS, err);
+    assertTrue("failed to write", SUCCESS==err);
     call TestWriteConfig.done();
   }
 }
