@@ -4,6 +4,7 @@
  */
 
 #include "AM.h"
+#include "PuppetMessages.h"
 
 module HomeCommManagerP
 {
@@ -15,8 +16,8 @@ module HomeCommManagerP
   uses
   {
     interface SplitControl as RadioControl;
-    interface AMSend as RadioSend[am_id_t id];
-    interface Receive as RadioReceive[am_id_t id];
+    //interface AMSend as RadioSend[am_id_t id];
+    //interface Receive as RadioReceive[am_id_t id];
   }
 }
 implementation
@@ -44,11 +45,9 @@ implementation
     signal SplitControl.stopDone(err);
   }
   
-  command error_t PuppetAPI.registerDeviceRequest(register_t reg)
+  command error_t PuppetAPI.registerDeviceRequest(register_request_t reg)
   {
     //validate register elements
 
   }
-
-  
 }

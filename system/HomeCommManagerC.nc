@@ -16,4 +16,10 @@ implementation
 {
   //TODO: put some wirings here
   components HomeCommManagerP;
+  components ActiveMessageC as Radio;
+
+  PuppetAPI = HomeCommManagerP;
+  SplitControl = HomeCommManagerP;
+
+  HomeCommManagerP.RadioControl -> Radio;
 }
