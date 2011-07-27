@@ -1,25 +1,29 @@
 #ifndef PUPPETMESSAGES
 #define PUPPETMESSAGES
-
-#include "PuppetList.h"
 typedef struct sensor_info
 {
-  nx_char* id;
-  nx_char* measurement_unit;
+  char* id;
+  char* measurement_unit;
 }sensor_info_t;
+
+enum
+{
+  BASE = 1,//address of base node.
+  HOME_AM_ID = 1,
+};
 
 typedef struct manufacturer_info
 {
-  nx_char* name;
-  nx_char* id;
-  nx_char* device_id;
+  char* name;
+  char* id;
+  char* device_id;
 }manufacturer_info_t;
 
 typedef struct register_request
 {
-  nx_char* device_type;
-  nx_char* device_type_id;
-  puppet_node_t* sensor_info;
+  char* device_type;
+  char* device_type_id;
+  sensor_info_t* sensor_info;
   manufacturer_info_t* m_info;
 }register_request_t;
 

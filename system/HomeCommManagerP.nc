@@ -16,12 +16,21 @@ module HomeCommManagerP
   uses
   {
     interface SplitControl as RadioControl;
-    //interface AMSend as RadioSend[am_id_t id];
+    interface AMSend as RadioSend[am_id_t id];
     //interface Receive as RadioReceive[am_id_t id];
+    interface Packet;
+    interface AMPacket as MultiHopPacket;
   }
 }
 implementation
 {
+  //method definitions.
+  error_t validateRegisterRequest(register_request_t* reg);
+  error_t sendPacket(message_t* msg);
+
+  //global state variables.
+  int ready = 0;
+
   command error_t SplitControl.start()
   {
     //start radio, initialize api components
@@ -31,6 +40,8 @@ implementation
   event void RadioControl.startDone(error_t err)
   {
     //signal completion.
+    if (err == SUCCESS)
+      ready = 1;
     signal SplitControl.startDone(err);
   }
 
@@ -42,12 +53,55 @@ implementation
 
   event void RadioControl.stopDone(error_t err)
   {
+    if (err == SUCCESS)
+      ready = 0;
     signal SplitControl.stopDone(err);
   }
   
-  command error_t PuppetAPI.registerDeviceRequest(register_request_t reg)
+  command error_t PuppetAPI.registerDeviceRequest(message_t* msg)
   {
+    register_request_t* req = call Packet.getPayload(msg,sizeof(register_request_t));
+    if (req == NULL)
+      return FAIL;
     //validate register elements
+    if (validateRegisterRequest(reg) != SUCCESS)
+      return FAIL;
+    else
+    {
+      //prepare to send info if already initialized.
+      error_t err = sendPacket(msg,sizeof(register_request_t));
+      return err; //TODO: Log err for instrumentation.
+    }
+  }
+  
+  event void RadioSend.sendDone(message_t* msg, error_t e)
+  {
+    if(e == SUCCESS)
+      signal PuppetAPI.registerRequestDone(msg, e);
+    else
+    {
+      //TODO: Log data for instrumentation
+      signal PuppetAPI.registerRequestDone(msg, e);
+    }
+  }
 
+  error_t sendPacket(message_t* msg, size)
+  {
+    error_t err = FAIL;
+    if(ready)
+      err = call RadioSend.send(BASE,msg,size);
+    return err;
+  }
+
+  error_t validateRegisterRequest(register_request_t* reg)
+  {
+    if (reg->device_type != NULL &&
+        reg->device_type_id != NULL &&
+        reg->sensor_info->id != NULL &&
+        reg->sensor_info->measurement_unit != NULL &&
+        reg->m_info != NULL)
+        return SUCCESS;
+    else
+      return FAIL;
   }
 }

@@ -2,7 +2,7 @@
   *@author: Chuka Okoye
   *@email: chuka@puppetme.com
 **/
-
+#include "PuppetMessages.h"
 configuration HomeCommManagerC
 {
   provides
@@ -16,10 +16,13 @@ implementation
 {
   //TODO: put some wirings here
   components HomeCommManagerP;
-  components ActiveMessageC as Radio;
-
+  components DymoNetworkC;
+  
   PuppetAPI = HomeCommManagerP;
   SplitControl = HomeCommManagerP;
 
-  HomeCommManagerP.RadioControl -> Radio;
+  HomeCommManagerP.RadioControl -> DymoNetworkC;
+  HomeCommManagerP.RadioSend -> DymoNetworkC.MHSend[HOME_AM_ID];
+  HomeCommManagerP.MultiHopPacket -> DymoNetworkC;
+  HomeCommManagerP.Packet -> DymoNetworkC;
 }
