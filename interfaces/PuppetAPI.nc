@@ -1,11 +1,11 @@
-#include "PuppetMessages.h"
+#include "HomeCommManager.h"
 #include "message.h"
 
 interface PuppetAPI
 {
-  command error_t registerDeviceRequest(message_t* reg);
+  command error_t registerDeviceRequest(register_request_t* reg);
   
-  event void registerRequestDone(message_t msg, error_t err);
+  event void registerRequestDone(message_t* msg, error_t err);
 
-  event void registerDeviceResponse(void* payload);
+  event void registerDeviceResponse(void* res);
 }

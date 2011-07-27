@@ -3,7 +3,6 @@
  *@email: chuka@puppetme.com
  */
 
-#include <AM.h>
 #include <message.h>
 #include "HomeCommManager.h"
 
@@ -26,10 +25,11 @@ implementation
 {
   //method definitions.
   error_t validateRegisterRequest(register_request_t* reg);
-  error_t sendPacket(message_t* msg, int size);
+  error_t sendPacket(register_request_t* req);
 
   //global state variables.
   int ready = 0;
+  message_t message_buf;
 
   command error_t SplitControl.start()
   {
@@ -58,18 +58,17 @@ implementation
     signal SplitControl.stopDone(err);
   }
   
-  command error_t PuppetAPI.registerDeviceRequest(message_t* msg)
+  command error_t PuppetAPI.registerDeviceRequest(register_request_t* req)
   {
-    register_request_t* reg = call Packet.getPayload(msg,sizeof(register_request_t));
-    if (reg == NULL)
+    if (req == NULL)
       return FAIL;
     //validate register elements
-    if (validateRegisterRequest(reg) != SUCCESS)
+    if (validateRegisterRequest(req) != SUCCESS)
       return FAIL;
     else
     {
       //prepare to send info if already initialized.
-      error_t err = sendPacket(msg,sizeof(register_request_t));
+      error_t err = sendPacket(req);
       return err; //TODO: Log err for instrumentation.
     }
   }
@@ -85,12 +84,16 @@ implementation
     }
   }
 
-  error_t sendPacket(message_t* msg, size)
+  error_t sendPacket(register_request_t* req)
   {
     error_t err = FAIL;
     if(ready)
-      err = call RadioSend.send(msg,size);
-    call Leds.led2On();
+    {
+      register_request_t* ptr =(register_request_t*) call RadioSend.getPayload(&message_buf,sizeof(register_request_t));
+      memcpy(ptr,req,sizeof(register_request_t));
+      err = call RadioSend.send(0xffff,message_buf,size);
+      call Leds.led2On();
+    }
     return err;
   }
 

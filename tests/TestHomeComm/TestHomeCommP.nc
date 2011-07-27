@@ -1,6 +1,5 @@
 #include "TestCase.h"
-#include "PuppetMessages.h"
-#include "message.h"
+#include "HomeCommManager.h"
 
 module TestHomeCommP
 {
@@ -11,19 +10,15 @@ module TestHomeCommP
     interface TestCase as TestAPIRegisterDevice;
     interface SplitControl as HomeCommControl;
     interface PuppetAPI as API;
-    interface Send;
   }
 }
 implementation
 {
-  message_t msg;
   register_request_t* reg; 
 
   event void SetUp.run()
   {
-    //retrieve pointer to payload
-    reg = call Send.getPayload(&msg,sizeof(register_request_t));
-    assertTrue("Message bigger than packet allows", reg != NULL); //message should not be bigger than packet allows
+    reg = (register_request_t*)malloc(sizeof(register_request_t));
     //now setup struct with data.
     reg->device_type = "FRIDGE";
     reg->device_type_id = "01";
@@ -50,26 +45,24 @@ implementation
     assertEquals("Register device should fail",\
       call API.registerDeviceRequest(NULL),FAIL); //fails because of null msg
     //TODO: Add more negative tests for validation.
-    assertEquals("Reg"
     call TestSplitControl.done();
   }
 
   event void TestAPIRegisterDevice.run()
   {
     assertTrue("Failed to register device",
-          call API.registerDeviceRequest(msg) == SUCCESS);
+    call API.registerDeviceRequest(reg) == SUCCESS);
   }
 
   event void API.registerRequestDone(message_t* msg, error_t e)
   {
     assertTrue("Failed to send message",e==SUCCESS);
-    TestAPIRegisterDevice.done();
+    call TestAPIRegisterDevice.done();
     assertEquals("Failed to stop HomeComm",
           call HomeCommControl.stop(),SUCCESS);
   }
 
-  event void registerDeviceResponse(message_t* msg)
-  {
-  }
+  event void API.registerDeviceResponse(void* res)
+  {}
 
 }
