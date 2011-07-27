@@ -1,6 +1,6 @@
 #include "TestCase.h"
 #include "PuppetMessages.h"
-#include "messages.h"
+#include "message.h"
 
 module TestHomeCommP
 {
@@ -8,7 +8,7 @@ module TestHomeCommP
   {
     interface TestControl as SetUp;
     interface TestCase as TestSplitControl;
-    interface TestCase as PuppetAPIRegisterDevice;
+    interface TestCase as TestAPIRegisterDevice;
     interface SplitControl as HomeCommControl;
     interface PuppetAPI as API;
     interface Packet;
@@ -54,7 +54,7 @@ implementation
     call TestSplitControl.done();
   }
 
-  event void PuppetAPIRegisterDevice.run()
+  event void TestAPIRegisterDevice.run()
   {
     assertTrue("Failed to register device",
           call API.registerDeviceRequest(msg) == SUCCESS);
@@ -63,9 +63,13 @@ implementation
   event void API.registerRequestDone(message_t* msg, error_t e)
   {
     assertTrue("Failed to send message",e==SUCCESS);
-    PuppetAPIRegisterDevice.done();
+    TestAPIRegisterDevice.done();
     assertEquals("Failed to stop HomeComm",
           call HomeCommControl.stop(),SUCCESS);
+  }
+
+  event void registerDeviceResponse(message_t* msg)
+  {
   }
 
 }

@@ -3,7 +3,8 @@
  *@email: chuka@puppetme.com
  */
 
-#include "AM.h"
+#include <AM.h>
+#include <message.h>
 #include "PuppetMessages.h"
 
 module HomeCommManagerP
@@ -16,17 +17,16 @@ module HomeCommManagerP
   uses
   {
     interface SplitControl as RadioControl;
-    interface AMSend as RadioSend[am_id_t id];
-    //interface Receive as RadioReceive[am_id_t id];
-    interface Packet;
-    interface AMPacket as MultiHopPacket;
+    interface StdControl as RoutingControl;
+    interface Send as RadioSend;
+    interface Leds;
   }
 }
 implementation
 {
   //method definitions.
   error_t validateRegisterRequest(register_request_t* reg);
-  error_t sendPacket(message_t* msg);
+  error_t sendPacket(message_t* msg, int size);
 
   //global state variables.
   int ready = 0;
@@ -60,8 +60,8 @@ implementation
   
   command error_t PuppetAPI.registerDeviceRequest(message_t* msg)
   {
-    register_request_t* req = call Packet.getPayload(msg,sizeof(register_request_t));
-    if (req == NULL)
+    register_request_t* reg = call Packet.getPayload(msg,sizeof(register_request_t));
+    if (reg == NULL)
       return FAIL;
     //validate register elements
     if (validateRegisterRequest(reg) != SUCCESS)
@@ -89,7 +89,8 @@ implementation
   {
     error_t err = FAIL;
     if(ready)
-      err = call RadioSend.send(BASE,msg,size);
+      err = call RadioSend.send(msg,size);
+    call Leds.led2On();
     return err;
   }
 

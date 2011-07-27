@@ -14,15 +14,17 @@ configuration HomeCommManagerC
 
 implementation
 {
-  //TODO: put some wirings here
   components HomeCommManagerP;
-  components DymoNetworkC;
-  
+  components ActiveMessageC;
+  components CollectionC as Collector;
+  components new CollectionSender(HOME_AM_ID);
+  components LedsC;
+
   PuppetAPI = HomeCommManagerP;
   SplitControl = HomeCommManagerP;
 
-  HomeCommManagerP.RadioControl -> DymoNetworkC;
-  HomeCommManagerP.RadioSend -> DymoNetworkC.MHSend[HOME_AM_ID];
-  HomeCommManagerP.MultiHopPacket -> DymoNetworkC;
-  HomeCommManagerP.Packet -> DymoNetworkC;
+  HomeCommManagerP.RadioControl -> ActiveMessageC;
+  HomeCommManagerP.RadioSend -> CollectionSenderC;
+  HomeCommManagerP.RoutingControl -> Collector;
+  HomeCommManagerP.Leds -> LedsC
 }
