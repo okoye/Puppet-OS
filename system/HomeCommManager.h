@@ -1,5 +1,6 @@
-#ifndef PUPPETMESSAGES
-#define PUPPETMESSAGES
+#ifndef HOME_COMM_MANAGER_H
+#define HOME_COMM_MANAGER_H
+
 typedef struct sensor_info
 {
   char* id;
@@ -9,7 +10,7 @@ typedef struct sensor_info
 enum
 {
   BASE = 1,//address of base node.
-  HOME_AM_ID = 1,
+  AM_HOMECOMM = 0x10, //Active message ID
 };
 
 typedef struct manufacturer_info

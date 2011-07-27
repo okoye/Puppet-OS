@@ -11,7 +11,7 @@ module TestHomeCommP
     interface TestCase as TestAPIRegisterDevice;
     interface SplitControl as HomeCommControl;
     interface PuppetAPI as API;
-    interface Packet;
+    interface Send;
   }
 }
 implementation
@@ -22,7 +22,7 @@ implementation
   event void SetUp.run()
   {
     //retrieve pointer to payload
-    reg = call Packet.getPayload(&msg,sizeof(register_request_t));
+    reg = call Send.getPayload(&msg,sizeof(register_request_t));
     assertTrue("Message bigger than packet allows", reg != NULL); //message should not be bigger than packet allows
     //now setup struct with data.
     reg->device_type = "FRIDGE";

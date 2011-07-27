@@ -5,7 +5,7 @@
 
 #include <AM.h>
 #include <message.h>
-#include "PuppetMessages.h"
+#include "HomeCommManager.h"
 
 module HomeCommManagerP
 {

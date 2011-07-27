@@ -2,7 +2,8 @@
   *@author: Chuka Okoye
   *@email: chuka@puppetme.com
 **/
-#include "PuppetMessages.h"
+#include "HomeCommManager.h"
+
 configuration HomeCommManagerC
 {
   provides
@@ -14,11 +15,11 @@ configuration HomeCommManagerC
 
 implementation
 {
-  components HomeCommManagerP;
-  components ActiveMessageC;
-  components CollectionC as Collector;
-  components new CollectionSender(HOME_AM_ID);
-  components LedsC;
+  components new CollectionSender(AM_HOMECOMM),
+            HomeCommManagerP,
+            ActiveMessageC,
+            CollectionC as Collector,
+            LedsC;
 
   PuppetAPI = HomeCommManagerP;
   SplitControl = HomeCommManagerP;
@@ -26,5 +27,5 @@ implementation
   HomeCommManagerP.RadioControl -> ActiveMessageC;
   HomeCommManagerP.RadioSend -> CollectionSenderC;
   HomeCommManagerP.RoutingControl -> Collector;
-  HomeCommManagerP.Leds -> LedsC
+  HomeCommManagerP.Leds -> LedsC;
 }
