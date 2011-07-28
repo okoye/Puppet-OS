@@ -91,19 +91,17 @@ implementation
     {
       register_request_t* ptr =(register_request_t*) call RadioSend.getPayload(&message_buf,sizeof(register_request_t));
       memcpy(ptr,req,sizeof(register_request_t));
-      err = call RadioSend.send(0xffff,message_buf,size);
+      err = call RadioSend.send(&message_buf,sizeof(register_request_t));
       call Leds.led2On();
     }
-    return err;
+    return FAIL;
   }
 
   error_t validateRegisterRequest(register_request_t* reg)
   {
     if (reg->device_type != NULL &&
         reg->device_type_id != NULL &&
-        reg->sensor_info->id != NULL &&
-        reg->sensor_info->measurement_unit != NULL &&
-        reg->m_info != NULL)
+        reg->sensor_type_ids != NULL)
         return SUCCESS;
     else
       return FAIL;

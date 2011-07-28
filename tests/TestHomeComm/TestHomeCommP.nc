@@ -5,28 +5,17 @@ module TestHomeCommP
 {
   uses
   {
-    interface TestControl as SetUp;
     interface TestCase as TestSplitControl;
     interface TestCase as TestAPIRegisterDevice;
     interface SplitControl as HomeCommControl;
     interface PuppetAPI as API;
+    interface Packet;
   }
 }
 implementation
 {
   register_request_t* reg; 
 
-  event void SetUp.run()
-  {
-    reg = (register_request_t*)malloc(sizeof(register_request_t));
-    //now setup struct with data.
-    reg->device_type = "FRIDGE";
-    reg->device_type_id = "01";
-    reg->sensor_info->id = "3452";
-    reg->sensor_info->measurement_unit = "Farenheit";
-    reg->m_info->name = "Samsung";
-    reg->m_info->id = "034567";
-  }
   event void TestSplitControl.run()
   {
     error_t value = call HomeCommControl.start();
@@ -37,21 +26,37 @@ implementation
   event void HomeCommControl.startDone(error_t value)
   {
     assertEquals("HomeComm start failed",SUCCESS,value);
+    call HomeCommControl.stop();
   }
   
   event void HomeCommControl.stopDone(error_t value)
   {
     assertEquals("HomeComm stop failed",SUCCESS,value);
-    assertEquals("Register device should fail",\
-      call API.registerDeviceRequest(NULL),FAIL); //fails because of null msg
-    //TODO: Add more negative tests for validation.
     call TestSplitControl.done();
   }
 
   event void TestAPIRegisterDevice.run()
   {
-    assertTrue("Failed to register device",
-    call API.registerDeviceRequest(reg) == SUCCESS);
+    error_t err1, err2;
+    reg = (register_request_t*)malloc(sizeof(register_request_t));
+    
+    //initialize struct
+    reg->device_type = "FRIDGE";
+    reg->device_type_id = "01";
+    reg->sensor_type_ids[0] = "3452";
+    reg->manufacturer_name = "Samsung";
+    reg->manufacturer_id = "034567";
+
+    call HomeCommControl.start(); //re-initialize api.
+    err1 = call API.registerDeviceRequest(reg);
+    err2 = call API.registerDeviceRequest(NULL);
+    assertTrue("Failed to register device",err1 == TRUE);
+    assertEquals("Register device should fail", err2,FAIL);
+    assertResultIsBelow("Message greater than payload size",
+          sizeof(register_request_t),call Packet.maxPayloadLength());
+    if (err1 == FAIL || err2 == SUCCESS)
+      call TestAPIRegisterDevice.done(); //prevent from timing out
+    //TODO: More negative tests for validation.
   }
 
   event void API.registerRequestDone(message_t* msg, error_t e)
