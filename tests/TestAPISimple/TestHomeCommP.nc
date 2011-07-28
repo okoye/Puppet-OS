@@ -43,17 +43,16 @@ implementation
     //initialize struct
     reg->device_type = "FRIDGE";
     reg->device_type_id = "01";
-    reg->sensor_type_ids[0] = "3452";
-    reg->manufacturer_name = "Samsung";
-    reg->manufacturer_id = "034567";
+    reg->sensor_info->id = "345678";
+    reg->sensor_info->measurement_unit = "Watts";
+    reg->m_info->id = "345678";
+    reg->m_info->name = "Samsung";
 
     call HomeCommControl.start(); //re-initialize api.
-    err1 = call API.registerDeviceRequest(reg);
     err2 = call API.registerDeviceRequest(NULL);
-    assertTrue("Failed to register device",err1 == TRUE);
     assertEquals("Register device should fail", err2,FAIL);
-    assertResultIsBelow("Message greater than payload size",
-          sizeof(register_request_t),call Packet.maxPayloadLength());
+    assertResultIsBelow("Register Message greater than Packet",
+          call Packet.maxPayloadLength(),sizeof(register_request_t));
     if (err1 == FAIL || err2 == SUCCESS)
       call TestAPIRegisterDevice.done(); //prevent from timing out
     //TODO: More negative tests for validation.

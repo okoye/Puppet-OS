@@ -41,14 +41,20 @@ implementation
   {
     //signal completion.
     if (err == SUCCESS)
+    {
+      call RoutingControl.start();
       ready = 1;
+    }
     signal SplitControl.startDone(err);
   }
 
   command error_t SplitControl.stop()
   {
     //stop radio and deallocate resources
-    return call RadioControl.stop();
+    if(call RoutingControl.stop() == SUCCESS)
+      return call RadioControl.stop();
+    else
+      return FAIL;
   }
 
   event void RadioControl.stopDone(error_t err)
@@ -92,16 +98,18 @@ implementation
       register_request_t* ptr =(register_request_t*) call RadioSend.getPayload(&message_buf,sizeof(register_request_t));
       memcpy(ptr,req,sizeof(register_request_t));
       err = call RadioSend.send(&message_buf,sizeof(register_request_t));
-      call Leds.led2On();
+      return err;
     }
-    return FAIL;
+    return err;
   }
 
   error_t validateRegisterRequest(register_request_t* reg)
   {
     if (reg->device_type != NULL &&
         reg->device_type_id != NULL &&
-        reg->sensor_type_ids != NULL)
+        reg->sensor_info->id != NULL &&
+        reg->sensor_info->measurement_unit != NULL &&
+        reg->m_info != NULL)
         return SUCCESS;
     else
       return FAIL;
