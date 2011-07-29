@@ -11,18 +11,19 @@ module TestAPIComplexP
     interface SplitControl;
     interface PuppetAPI;
     interface RootControl;
-    interface Snoop;
+    interface Receive as Snoop;
     interface Receive;
     interface Leds;
-    interface ActiveMessageAddress;
   }
 }
 implementation
 {
-  //TODO: Make use of Collection Snoop & other debugging tools.
-  //TODO: Employ the use of statistics for regression tests.
   //TODO: Add more negative tests
   register_request_t* reg;
+
+  enum{
+    NUM_OF_PACKETS = 1000,
+  };
 
   /**Run once by all nodes before test start**/
   event void SetUpOneTime.run()
@@ -51,12 +52,9 @@ implementation
   {
     reg = (register_request_t*)malloc(sizeof(register_request_t));
 
-    reg->device_type = "FRIDGE";
-    reg->device_type_id = "00";
-    reg->sensor_info->id = "345678";
-    reg->sensor_info->measurement_unit = "Watts";
-    reg->m_info->id = "4567989";
-    reg->m_info->name = "Samsung";
+    reg->device_type_id = 1;
+    reg->sensor_ids[0] = 30;
+    reg->man_id = 1678902;
 
     assertTrue("Could not send message",
       call PuppetAPI.registerDeviceRequest(reg)==SUCCESS);
@@ -73,20 +71,17 @@ implementation
     //Do nothing
   }
 
-  async event void ActiveMessageAddress.changed()
-  {
-    //Do nothing
-  }
-
   event message_t* Snoop.receive(message_t* msg, void* payload, uint8_t len)
   {
-    assertNotNull(msg != NULL);
-    call TestRegister.done();
+    assertNotNull(msg);
     return msg;
   }
 
   event message_t* Receive.receive(message_t* msg, void* payload, uint8_t len)
   {
     assertNotNull(msg);
+    call TestRegister.done();
+    return msg;
   }
+
 }

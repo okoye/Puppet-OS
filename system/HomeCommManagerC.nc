@@ -15,7 +15,7 @@ configuration HomeCommManagerC
 
 implementation
 {
-  components new CollectionSenderC(AM_HOMECOMM),
+  components new CollectionSenderC(AM_REGISTER_REQUEST),
             HomeCommManagerP,
             ActiveMessageC,
             CollectionC as Collector;

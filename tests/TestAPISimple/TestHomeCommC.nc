@@ -2,15 +2,15 @@ configuration TestHomeCommC
 {}
 implementation
 {
-  components new TestCaseC() as TestSplitControlC,
-            new TestCaseC() as TestAPIRegisterDeviceC,
-            HomeCommManagerC as HomeController,
+  components new TestCaseC() as TestAPIRegisterDeviceC,
+            HomeCommManagerC,
             CollectionC,
             TestHomeCommP;
 
-  TestHomeCommP.TestSplitControl -> TestSplitControlC;
+  TestHomeCommP.Setup -> TestAPIRegisterDeviceC.SetUpOneTime;
+  TestHomeCommP.TearDown -> TestAPIRegisterDeviceC.TearDownOneTime;
   TestHomeCommP.TestAPIRegisterDevice -> TestAPIRegisterDeviceC;
-  TestHomeCommP.HomeCommControl -> HomeController;
-  TestHomeCommP.API -> HomeController;
+  TestHomeCommP.HomeCommControl -> HomeCommManagerC;
+  TestHomeCommP.API -> HomeCommManagerC;
   TestHomeCommP.Packet -> CollectionC.Packet;
 }

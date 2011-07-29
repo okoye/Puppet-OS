@@ -10,7 +10,7 @@ typedef struct sensor_info
 enum
 {
   BASE = 1,//address of base node.
-  AM_HOMECOMM = 0x10, //Active message ID
+  AM_REGISTER_REQUEST = 0x10, //Active message ID
 };
 
 typedef struct manufacturer_info
@@ -20,12 +20,12 @@ typedef struct manufacturer_info
   char* device_id;
 }manufacturer_info_t;
 
+//TODO: Add versioning.
 typedef struct register_request
 {
-  char* device_type;
-  char* device_type_id;
-  sensor_info_t* sensor_info;
-  manufacturer_info_t* m_info;
+  nx_uint32_t device_type_id;
+  nx_uint16_t* sensor_ids;
+  nx_uint32_t man_id;
 }register_request_t;
 
 #endif

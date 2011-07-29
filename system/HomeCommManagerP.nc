@@ -95,11 +95,9 @@ implementation
 
   error_t validateRegisterRequest(register_request_t* reg)
   {
-    if (reg->device_type != NULL &&
-        reg->device_type_id != NULL &&
-        reg->sensor_info->id != NULL &&
-        reg->sensor_info->measurement_unit != NULL &&
-        reg->m_info != NULL)
+    if (reg->device_type_id != 0 &&
+        reg->sensor_ids != 0 &&
+        reg->man_id != 0)
         return SUCCESS;
     else
       return EINVAL;
