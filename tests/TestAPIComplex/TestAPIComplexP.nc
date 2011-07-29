@@ -11,22 +11,25 @@ module TestAPIComplexP
     interface SplitControl;
     interface PuppetAPI;
     interface RootControl;
+    interface Snoop;
     interface Receive;
+    interface Leds;
+    interface ActiveMessageAddress;
   }
 }
 implementation
 {
+  //TODO: Make use of Collection Snoop & other debugging tools.
+  //TODO: Employ the use of statistics for regression tests.
+  //TODO: Add more negative tests
   register_request_t* reg;
 
   /**Run once by all nodes before test start**/
   event void SetUpOneTime.run()
   {
     call SplitControl.start();
-    //Check if node id is 1, if so, set root.
-    if(TOS_NODE_ID)
-    {
-      call RootControl.setRoot();
-    }
+    call Leds.led2On();
+    call RootControl.setRoot(); //TODO: Make use of Collection Snoop debugging
   }
   /**Run once by all nodes after all tests completed**/
   event void TearDownOneTime.run()
@@ -62,16 +65,28 @@ implementation
   event void PuppetAPI.registerRequestDone(message_t* msg, error_t err)
   {
     assertTrue("Message was not sent",err==SUCCESS);
+    assertTrue("Message was NULL", msg != NULL);
   }
 
   event void PuppetAPI.registerDeviceResponse(void* res)
   {
-    //Should do nothing
+    //Do nothing
+  }
+
+  async event void ActiveMessageAddress.changed()
+  {
+    //Do nothing
+  }
+
+  event message_t* Snoop.receive(message_t* msg, void* payload, uint8_t len)
+  {
+    assertNotNull(msg != NULL);
+    call TestRegister.done();
+    return msg;
   }
 
   event message_t* Receive.receive(message_t* msg, void* payload, uint8_t len)
   {
-    assertSuccess();
-    call TestRegister.done();
+    assertNotNull(msg);
   }
 }

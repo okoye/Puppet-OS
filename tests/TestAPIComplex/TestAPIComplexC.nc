@@ -8,6 +8,8 @@ implementation
   components HomeCommManagerC;
   components CollectionC;
   components TestAPIComplexP;
+  components LedsC;
+  components ActiveMessageAddressC;
 
   TestAPIComplexP.SetUpOneTime -> TestRegisterC.SetUpOneTime;
   TestAPIComplexP.TearDownOneTime -> TestRegisterC.TearDownOneTime;
@@ -16,4 +18,7 @@ implementation
   TestAPIComplexP.PuppetAPI -> HomeCommManagerC;
   TestAPIComplexP.RootControl -> CollectionC;
   TestAPIComplexP.Receive -> CollectionC.Receive[AM_HOMECOMM];
+  TestAPIComplexP.Snoop -> CollectionC.Snoop[AM_HOMECOMM];
+  TestAPIComplexP.Leds -> LedsC;
+  TestAPIComplexP.ActiveMessageAddress -> ActiveMessageAddressC;
 }

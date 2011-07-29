@@ -18,8 +18,7 @@ implementation
   components new CollectionSenderC(AM_HOMECOMM),
             HomeCommManagerP,
             ActiveMessageC,
-            CollectionC as Collector,
-            LedsC;
+            CollectionC as Collector;
 
   PuppetAPI = HomeCommManagerP;
   SplitControl = HomeCommManagerP;
@@ -27,5 +26,4 @@ implementation
   HomeCommManagerP.RadioControl -> ActiveMessageC;
   HomeCommManagerP.RadioSend -> CollectionSenderC;
   HomeCommManagerP.RoutingControl -> Collector;
-  HomeCommManagerP.Leds -> LedsC;
 }
