@@ -1,4 +1,4 @@
-#include <BootConfiguration.h>
+#include <BootConfigurator.h>
 
 interface BootConfigurator
 {

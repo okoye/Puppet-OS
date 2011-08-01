@@ -23,13 +23,13 @@ implementation
 
   config_data_t* config = NULL;
 
-  async command error_t BootConfigurator.configure()
+  command error_t BootConfigurator.configure()
   {
-    error_t status = FAIL;
     
     config = (config_data_t*)malloc(sizeof(config_data_t));
-    call Mount.mount();//fail if it has already been mounted.
-    
+    if(!config)
+      return ENOMEM;
+    return call Mount.mount();//fail if it has already been mounted.
   }
 
   event void Mount.mountDone(error_t err)
@@ -87,7 +87,7 @@ implementation
     }
   }
 
-  async command void BootConfigurator.writeConfig(config_data_t* data)
+  command void BootConfigurator.writeConfig(config_data_t* data)
   {
     //just to be safe, remount incase it is not mounted
     call Mount.mount();

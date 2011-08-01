@@ -1,7 +1,7 @@
 #include "TestCase.h"
 #include "BootConfigurator.h"
 
-module BootConfiguratorP
+module TestConfiguratorP
 {
   uses
   {
