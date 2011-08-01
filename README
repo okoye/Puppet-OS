@@ -1,1 +1,6 @@
 Core files, interfaces, modules, and components based on TinyOS.
+
+apps: Contains actual application that run on motes and basestation.
+interfaces: interfaces used by our apps.
+system: implementation of interfaces.
+tests: unit tests exercising specific functionality and full functional tests.

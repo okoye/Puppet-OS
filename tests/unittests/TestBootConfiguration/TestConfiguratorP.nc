@@ -1,32 +1,32 @@
 #include "TestCase.h"
-#include "PuppetConfiguration.h"
+#include "BootConfigurator.h"
 
-module TestConfiguratorP
+module BootConfiguratorP
 {
   uses
   {
     interface TestCase as TestReadConfig;
     interface TestCase as TestWriteConfig;
-    interface PuppetConfigurator;
+    interface BootConfigurator;
   }
 }
 implementation
 {
   event void TestWriteConfig.run()
   {
-    call PuppetConfigurator.writeConfig(NULL);
+    call BootConfigurator.writeConfig(NULL);
   }
   event void TestReadConfig.run()
   {
-    call PuppetConfigurator.configure();
+    call BootConfigurator.configure();
   }
-  event void PuppetConfigurator.configureDone(error_t err, config_data_t* c)
+  event void BootConfigurator.configureDone(error_t err, config_data_t* c)
   {
     assertTrue("err was FAIL", SUCCESS == err);
     assertNull(c);
     call TestReadConfig.done();
   }
-  event void PuppetConfigurator.writeConfigDone(error_t err)
+  event void BootConfigurator.writeConfigDone(error_t err)
   {
     assertTrue("failed to write", SUCCESS==err);
     call TestWriteConfig.done();

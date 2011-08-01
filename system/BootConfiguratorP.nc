@@ -3,13 +3,13 @@
  *@email: chuka@puppetme.com
  */
 
-#include "PuppetConfiguration.h"
+#include "BootConfigurator.h"
 #include <stdlib.h>
 //TODO: Add support for state interface.
 
-module PuppetConfiguratorP
+module BootConfiguratorP
 {
-  provides interface PuppetConfigurator;
+  provides interface BootConfigurator;
   uses
   {
     interface ConfigStorage as Config;
@@ -23,7 +23,7 @@ implementation
 
   config_data_t* config = NULL;
 
-  async command error_t PuppetConfigurator.configure()
+  async command error_t BootConfigurator.configure()
   {
     error_t status = FAIL;
     
@@ -87,7 +87,7 @@ implementation
     }
   }
 
-  async command void PuppetConfigurator.writeConfig(config_data_t* data)
+  async command void BootConfigurator.writeConfig(config_data_t* data)
   {
     //just to be safe, remount incase it is not mounted
     call Mount.mount();
@@ -127,32 +127,32 @@ implementation
 
   task void signalReadFailure()
   {
-    signal PuppetConfigurator.configureDone(FAIL, config);
+    signal BootConfigurator.configureDone(FAIL, config);
   }
 
   task void signalReadSuccess()
   {
-    signal PuppetConfigurator.configureDone(SUCCESS, config);
+    signal BootConfigurator.configureDone(SUCCESS, config);
   }
 
   task void signalReadTemporalError()
   {
-    signal PuppetConfigurator.configureDone(EBUSY, config);
+    signal BootConfigurator.configureDone(EBUSY, config);
   }
 
   task void signalWriteFailure()
   {
-    signal PuppetConfigurator.writeConfigDone(FAIL);
+    signal BootConfigurator.writeConfigDone(FAIL);
   }
 
   task void signalWriteSuccess()
   {
-    signal PuppetConfigurator.writeConfigDone(SUCCESS);
+    signal BootConfigurator.writeConfigDone(SUCCESS);
   }
 
   task void signalWriteTemporalError()
   {
-    signal PuppetConfigurator.writeConfigDone(EBUSY);
+    signal BootConfigurator.writeConfigDone(EBUSY);
   }
 
   void signalReadCompletion(error_t err, config_data_t* ptr)

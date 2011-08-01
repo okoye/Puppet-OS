@@ -4,10 +4,10 @@ implementation
 {
   components new TestCaseC() as TestReadConfigC;
   components new TestCaseC() as TestWriteConfigC;
-  components PuppetConfiguratorC;
+  components BootConfiguratorC;
   components TestConfiguratorP;
 
   TestConfiguratorP.TestReadConfig -> TestReadConfigC;
   TestConfiguratorP.TestWriteConfig -> TestWriteConfigC;
-  TestConfiguratorP.PuppetConfigurator -> PuppetConfiguratorC;
+  TestConfiguratorP.BootConfigurator -> BootConfiguratorC;
 }

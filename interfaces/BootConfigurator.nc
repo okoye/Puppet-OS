@@ -1,6 +1,6 @@
-#include <PuppetConfiguration.h>
+#include <BootConfiguration.h>
 
-interface PuppetConfigurator
+interface BootConfigurator
 {
   /**
    *This should retrieve configuration files from disk if exists
