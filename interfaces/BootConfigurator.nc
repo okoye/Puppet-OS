@@ -9,14 +9,14 @@ interface BootConfigurator
    *it returns an error_t if a problem occured while trying to
    *initiate the configuration process
    */
-  async command error_t configure();
+  command error_t configure();
 
   /**
    *This should write configuration files for permemnent storage
    *
    *@param config_data_t* data, data to be written to storage
    */
-  async command void writeConfig(config_data_t* data);
+  command void writeConfig(config_data_t* data);
 
   /**
    *Signaled after configure command finishes execution
