@@ -8,10 +8,7 @@ enum
   SINK_ADDRESS_PORT = 17634,
 };
 
-enum
-{
-  REGISTER_URL = "devices.puppetme.com/register"
-}
+#define REGISTER_URL "devices.puppetme.com/register"
 
 typedef struct register_request
 {

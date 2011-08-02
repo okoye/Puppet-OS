@@ -95,7 +95,7 @@ implementation{
   }
   void registerHandler(struct sockaddr_in6 *from, void* data,
                         uint16_t len, struct ip_metadata *meta){
-    Signal APIService.registerResponse(((p_response_t*)data)->body,
+    signal APIService.registerResponse(((p_response_t*)data)->body,
                                         ((p_response_t*)data)->http_code);
   }
 }
