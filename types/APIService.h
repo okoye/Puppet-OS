@@ -28,4 +28,12 @@ typedef struct p_message
   uint8_t version; //p_message version
   void* body; //actual data to be jsonified then sent.
 }p_message_t;
+
+typedef struct p_response
+{
+  char* resource_url;
+  uint16_t http_code;
+  void* body;
+  uint8_t version;
+}p_response_t;
 #endif
