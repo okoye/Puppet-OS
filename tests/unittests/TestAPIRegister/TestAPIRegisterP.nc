@@ -26,9 +26,9 @@ implementation{
   event void TestRegister.run(){
     register_request_t reg;
     error_t err;
-    reg.device_type_id = "TEST_DEVICE_ID";
-    reg->sensor_ids[0] = "TEST_SENSOR_ID";
-    reg->man_id = "TEST_MANUFACTURER_ID";
+    reg.device_type_id = 1;
+    reg->sensor_ids[0] = 1;
+    reg->man_id = 1;
 
     err = call APIService.registerRequest(reg);
     assertTrue("Register request failed to send",err==SUCCESS);
