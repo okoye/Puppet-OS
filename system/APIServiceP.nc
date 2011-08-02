@@ -1,3 +1,5 @@
+#include <lib6lowpan.h>
+#include <ip.h>
 #include <message.h>
 #include <APIService.h>
 
@@ -54,7 +56,7 @@ implementation{
     //First verify the data is from SINK node, after verification,
     //Check url in switch statement and handle in appropriate 
     //handler.
-    if(*src == *sink){
+    if(*src == sink){
       switch(((p_message*)payload)->resource_url){
         case REGISTER_URL:
           //call register handler
