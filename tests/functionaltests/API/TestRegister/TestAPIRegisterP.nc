@@ -1,40 +1,56 @@
-#include "TestCase.h"
 #include <APIService.h>
+#include "printf.h"
 
 module TestAPIRegisterP{
   uses{
-    interface TestControl as SetUpOneTime;
-    interface TestControl as TearDownOneTime;
-    interface TestCase as TestRegister;
+    interface Boot;
     interface SplitControl;
     interface APIService;
-    interface Leds;
+    interface Timer<TMilli>;
   }
 }
 implementation{
-  event void SetUpOneTime.run(){
-    call Leds.led1Toggle();
+  void testRegister();
+  void logError(char* err);
+  uint16_t count;
+
+  event void Boot.booted(){
     call SplitControl.start();
+    call Timer.startPeriodic(300);
+    logError("Booted up successfully");
   }
-  event void TearDownOneTime.run(){
-    call SplitControl.stop();
+  event void Timer.fired(){
+    printf("Timer fired.\n");
+    printfflush();
+    testRegister();
   }
   event void SplitControl.startDone(error_t err){
-    call SetUpOneTime.done();
+    logError("Radio started successfully");
   }
   event void SplitControl.stopDone(error_t err){
-    call TearDownOneTime.done();
   }
-  event void TestRegister.run(){
-    register_request_t reg;
+  void testRegister(){
+    register_request_t* reg;
     error_t err;
-    reg.device_type_id = 1;
-    reg.sensor_ids[0] = 1;
-    reg.man_id = 1;
-
-    err = call APIService.registerRequest(&reg);
-    assertTrue("Register request failed to send",err==SUCCESS);
-    call TestRegister.done();
+      
+    count++;
+    printf("Allocating memory for register_request\n");
+    reg = (register_request_t*)malloc(sizeof(register_request_t));
+    printf("Allocated memory for register\n");
+    reg->device_type_id = 1;
+    reg->sensor_ids[0] = 1;
+    reg->man_id = 1;
+    printf("Initialized register data structure\n");
+    err = call APIService.registerRequest(reg);
+    printf("Result: %d\tCount: %d\n",err,count);
+    free(reg);
+    printf("Cleaning up allocated memory\n");
+    printfflush();
+  }
+  void logError(char* err){
+    printf(err);
+    printf("\n");
+    printfflush();
   }
   event void APIService.registerResponse(void* msg, uint16_t http_code){
   }

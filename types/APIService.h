@@ -3,8 +3,8 @@
 
 enum
 {
-  SINK_ADDRESS_PREFIX = 0xff02,//address of base node.
-  SINK_ADDRESS_SUFFIX = 5,
+  SINK_ADDRESS_PREFIX = 0xfec0,//address of base node.
+  SINK_ADDRESS_SUFFIX = 1,
   SINK_ADDRESS_PORT = 17634,
 };
 

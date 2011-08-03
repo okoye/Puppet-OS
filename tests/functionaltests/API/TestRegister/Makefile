@@ -7,6 +7,7 @@ CFLAGS += -I$(OS_HOME)/system/
 CFLAGS += -L$(OS_HOME)/system/
 CFLAGS += -I$(OS_HOME)/interfaces/
 CFLAGS += -I$(OS_HOME)/types/
+CFLAGS += -I$(TOSDIR)/lib/printf
 
 #ipv6 specific stuff
 CFLAGS += -DCC2420_DEF_CHANNEL=15

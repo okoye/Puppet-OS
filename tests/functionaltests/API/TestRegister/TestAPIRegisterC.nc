@@ -1,12 +1,10 @@
 configuration TestAPIRegisterC{}
 implementation{
-  components new TestCaseC() as TestRegisterC, APIServiceC, TestAPIRegisterP;
-  components LedsC;
+  components  APIServiceC, TestAPIRegisterP;
+  components new TimerMilliC() as Timer0, MainC;
 
-  TestAPIRegisterP.SetUpOneTime -> TestRegisterC.SetUpOneTime;
-  TestAPIRegisterP.TearDownOneTime -> TestRegisterC.TearDownOneTime;
-  TestAPIRegisterP.TestRegister -> TestRegisterC;
   TestAPIRegisterP.SplitControl -> APIServiceC;
   TestAPIRegisterP.APIService -> APIServiceC;
-  TestAPIRegisterP.Leds -> LedsC;
+  TestAPIRegisterP.Timer -> Timer0;
+  TestAPIRegisterP.Boot -> MainC.Boot;
 }
