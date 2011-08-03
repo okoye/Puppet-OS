@@ -8,7 +8,7 @@ implementation{
   components IPDispatchC, new UdpSocketC(), LedsC;
   components APIServiceP;
 
-  SplitControl = IPDispatch.SplitControl;
+  SplitControl = IPDispatchC.SplitControl;
   APIService = APIServiceP;
 
   APIServiceP.NetworkService -> UdpSocketC;

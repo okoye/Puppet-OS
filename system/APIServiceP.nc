@@ -25,6 +25,7 @@ implementation{
   error_t validateRegisterRequest(register_request_t* reg);
   void initializeSocket();
   void logError(char* message);
+  uint8_t resourceURLMapping(char* url);
   void registerHandler(struct sockaddr_in6 *f, void* b,
                         uint16_t l, struct ip_metadata *m);
   /*******************************************************
@@ -56,10 +57,12 @@ implementation{
     //First verify the data is from SINK node, after verification,
     //Check url in switch statement and handle in appropriate 
     //handler.
-    if(src->sin6_addr == sink.sin6_addr){
-      switch((p_message_t*)payload->resource_url){
-        case REGISTER_URL:
-          //call register handler
+    p_response_t* response;
+    if(memcmp(src,&sink,sizeof(struct sockaddr_in6))==0){
+      response = payload;
+      switch(resourceURLMapping(response->resource_url)){
+        case 0:
+          registerHandler(src, response, len, meta);
           break;
         default:
           logError("Unhandled request message type");
@@ -92,6 +95,12 @@ implementation{
   void logError(char* message){
     //Handles how error messages are logged.
     call Leds.led0Toggle();
+  }
+  uint8_t resourceURLMapping(char* url){
+    if(url == REGISTER_URL)
+      return 0;
+    else
+      return -1;
   }
   void registerHandler(struct sockaddr_in6 *from, void* data,
                         uint16_t len, struct ip_metadata *meta){

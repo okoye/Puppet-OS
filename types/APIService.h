@@ -8,12 +8,12 @@ enum
   SINK_ADDRESS_PORT = 17634,
 };
 
-#define REGISTER_URL "devices.puppetme.com/register"
+#define REGISTER_URL "devices.puppetme.com/register" //case 0
 
 typedef struct register_request
 {
   nx_uint16_t device_type_id;
-  nx_uint16_t sensor_ids;
+  nx_uint16_t* sensor_ids;
   nx_uint32_t man_id;
 }register_request_t;
 
