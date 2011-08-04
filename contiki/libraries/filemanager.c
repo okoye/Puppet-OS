@@ -1,4 +1,3 @@
-#include "contiki.h"
 #include "cfs/cfs.h"
 
 int fd_write, fd_read;
@@ -25,4 +24,11 @@ readData(char* filename, void* buf, unsigned int len){
   }else{
     buf = NULL;
   }
+}
+
+static int
+deleteData(char* filename){
+  cfs_remove(filename);
+  fd_read = cfs_open(filename, CFS_READ);
+  (fd_read == -1) ? 0:-1;
 }

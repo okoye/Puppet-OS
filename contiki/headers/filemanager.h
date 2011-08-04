@@ -11,3 +11,7 @@ writeData(char* filename, void* data, unsigned int len);
 //of buf.
 static void
 readData(char* filename, void* buf, unsigned int len);
+
+//Deletes 'filename' from coffee filesystem
+static int
+deleteData(char* filename);
