@@ -1,0 +1,9 @@
+*.target
+*.a
+*.map
+*.sky
+*.z1
+symbols.c
+symbols.h
+obj_sky
+obj_z1
