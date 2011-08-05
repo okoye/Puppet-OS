@@ -7,14 +7,13 @@ AUTOSTART_PROCESSES(&filesaveprocess);
 
 PROCESS_THREAD(filesaveprocess, ev, data){
   PROCESS_BEGIN();
-  char* msg;
+  char[10] msg = "ChukaBaka";
   unsigned int counter = 1;
   struct complex_structure
   {
     unsigned int value;
     char* string;
   };
-  msg = "ChukaBaka";
   struct complex_structure mystruct;
   mystruct.value = 2;
   mystruct.string = "Chuka";
