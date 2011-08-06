@@ -21,10 +21,17 @@ static
 unsigned read_hum(void){
   static unsigned rh;
   rh = sht11_humidity();
-  (unsigned)(-4 + 0.0405*rh - 2.8e-6*(rh*rh));
+  return (unsigned)(-4 + 0.0405*rh - 2.8e-6*(rh*rh));
 }
 
-int read_temp_hum(){
+int read_temp_hum(temp_hum_reading* buf){
+  //if buf is acutally supplied, assume synchronous version
+  //of temp and hum reader is intended.
+  if(buf != NULL){
+    buf->temperature = read_temp();
+    buf->humidity = read_hum();
+    return 1;
+  }
   //spawn process to manage continuous reading of sensors
   //but first kill any other existing processes.
   if(sensor_cbk != NULL){
@@ -33,6 +40,7 @@ int read_temp_hum(){
   }else{
     PRINTF(1,"No callback function defined");
   }
+  return 1;
 }
 
 PROCESS_THREAD(puppet_temp_hum, ev, data)

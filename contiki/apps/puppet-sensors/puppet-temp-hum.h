@@ -27,11 +27,20 @@ static
 unsigned read_hum(void);
 
 /*
+ *Type definition for temp_hum_reading
+ */
+typedef struct th_reading
+{
+  unsigned temperature;
+  unsigned humidity;
+}temp_hum_reading;
+
+/*
  *Accessofor retrieving temp_hum_reading
  *Buffer can be NULL in which case it checks if a callback
  *is registered.
  */
 int read_temp_hum(temp_hum_reading* buffer);
 
-//define TEMP_HUM_READING_DURATION
+//define READING_DURATION
 #endif
