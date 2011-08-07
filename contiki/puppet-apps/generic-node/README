@@ -1,0 +1,5 @@
+Generic node base for any kind of sensing node.
+It should be able to build a particular image based on the Makefile.target
+specified.
+
+A header file containing required definitions is specified in project-defs.h
