@@ -9,11 +9,15 @@
 #include "contiki.h"
 #include "contiki-net.h"
 #include "rest.h"
-
+#include "generic-node.h"
+#include "project-conf.h"
 /************************************************
      Include files depending on Target type.
 *************************************************/
-#if PLATFORM_HAS_SHT && (PLATFORM_HAS_TEMPERATURE || PLATFORM_HAS_HUMIDITY)
+#if PLATFORM_HAS_TEMPERATURE
+#include "dev/temperature-sensor.h"
+#endif
+#if PLATFORM_HAS_HUMIDITY
 #include "dev/sht11-sensor.h"
 #endif
 #if PLATFORM_HAS_LIGHT
@@ -60,7 +64,7 @@ void
 discover_handler(REQUEST* request, RESPONSE* response)
 {
   int index = 0;
-  memset(outputBuffer,'',sizeof(char)*OUTPUT_BUFFER_SIZE);
+  initialize_buffer();
   index += sprintf(outputBuffer+index,"%s,","</sensors>;rt=\"index\"");
   index += sprintf(outputBuffer+index,"%s","</actuators>;rt=\"index\"");
 
@@ -80,7 +84,7 @@ discover_handler(REQUEST* request, RESPONSE* response)
   index += sprintf(outputBuffer+index,
   "%s","</actuators/led>;rt=\"aleds\";if=\"actuator\"");
   index += sprintf(outputBuffer+index,
-  "<http://definitions.puppetme.com/actuators/led#1>;anchor=\"/actuators/led\";rel=\"describedbu\"");
+  "<http://definitions.puppetme.com/actuators/led#1>;anchor=\"/actuators/led\";rel=\"describedby\"");
 #endif
   rest_set_response_payload(response,(uint8_t*)outputBuffer,strlen(outputBuffer));
   rest_set_header_content_type(response, APPLICATION_LINK_FORMAT);
@@ -90,7 +94,7 @@ void
 sensors_handler(REQUEST* request, RESPONSE* response)
 {
   int index = 0;
-  memset(outputBuffer, '',sizeof(char)*OUTPUT_BUFFER_SIZE);
+  initialize_buffer();
   
 #if PLATFORM_HAS_TEMPERATURE
   index += sprintf(outputBuffer+index,
@@ -105,4 +109,81 @@ sensors_handler(REQUEST* request, RESPONSE* response)
 }
 
 void
-actuator_handle
+actuators_handler(REQUEST* request, RESPONSE* response)
+{
+  int index = 0;
+  initialize_buffer();
+
+#if PLATFORM_HAS_LEDS
+  index += sprintf(outputBuffer+index,
+  "%s","</actuators/led>;rt=\"aled\";if=\"actuator\"");
+#endif
+  rest_set_response_payload(response,(uint8_t*)outputBuffer,strlen(outputBuffer));
+  rest_set_header_content_type(response, APPLICATION_LINK_FORMAT);
+}
+
+#if PLATFORM_HAS_TEMPERATURE
+unsigned temperature;
+
+void
+read_temperature_sensor(unsigned* temp)
+{
+  *temp = -39.60 + 0.01 * temperature_sensor.value(TEMPERATURE_SENSOR);
+}
+
+void
+stemperature_handler(REQUEST* request, RESPONSE* response)
+{
+  int index = 0;
+  
+  initialize_buffer();
+  //retrieve temperature from sensor and send in a response.
+  read_temperature_sensor(&temperature);
+  sprintf(outputBuffer,"%u",temperature);
+
+  //TODO:Enhancement, store e-tag.
+  rest_set_header_content_type(response, TEXT_PLAIN);
+  rest_set_header_payload(response, outputBuffer, strlen(outputBuffer));
+}
+#endif
+#if PLATFORM_HAS_HUMIDITY
+unsigned humidity;
+
+void 
+read_humidity_sensor(unsigned* humidity)
+{
+  unsigned rh;
+  rh = sht11_humidity();
+  *humidity = (unsigned)(-4 + 0.0405*rh - 2.8e-6*(rh*rh));
+}
+
+void
+shumidity_handler(REQUEST* request, RESPONSE* response)
+{
+  int index = 0;
+  initialize_buffer();
+  //retrieve humidity from sensor and send in a response.
+  read_humidity_sensor(&humidity);
+  sprintf(outputBuffer, "%u",humidity);
+  //TODO: Store etag
+  rest_set_header_content_type(response, TEXT_PLAIN);
+  rest_set_header_payload(response, outputBuffer, strlen(outputBuffer));
+}
+#endif
+#if PLATFORM_HAS_LEDS
+void
+aled_handler(REQUEST* request, RESPONSE* response)
+{
+  int index = 0;
+  initialize_buffer();
+
+  //TODO: Define actuator controls for LEDs.
+}
+#endif
+/*****************************************************
+                 Internal Functions.
+******************************************************/
+static
+void initialize_buffer(){
+  memset(outputBuffer,'',sizeof(char)*OUTPUT_BUFFER_SIZE);
+}
