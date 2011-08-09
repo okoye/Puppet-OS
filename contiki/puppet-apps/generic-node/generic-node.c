@@ -33,7 +33,7 @@
 #define DEBUG 1
 #if DEBUG
 #include <stdio.h>
-#define PRINT_DBG(...) printf(__VA_ARGS__)
+#define PRINTF(...) printf(__VA_ARGS__)
 #else
 #define PRINTF(...)
 #endif
@@ -54,7 +54,7 @@ RESOURCE(stemperature, METHOD_GET,"sensors/temperature");
 RESOURCE(shumidity, METHOD_GET, "sensors/humidity");
 #endif
 #if PLATFORM_HAS_LEDS
-RESOURCE(aleds, METHOD_POST, "actuators/led");
+RESOURCE(aleds, METHOD_GET | METHOD_POST, "actuators/led");
 #endif
 
 /***************************************************
@@ -170,9 +170,9 @@ shumidity_handler(REQUEST* request, RESPONSE* response)
   rest_set_header_payload(response, outputBuffer, strlen(outputBuffer));
 }
 #endif
-#if PLATFORM_HAS_LEDS
+#if PLATFORM_HAS_ACTUATOR_LEDS
 void
-aled_handler(REQUEST* request, RESPONSE* response)
+aleds_handler(REQUEST* request, RESPONSE* response)
 {
   int index = 0;
   initialize_buffer();
@@ -185,5 +185,35 @@ aled_handler(REQUEST* request, RESPONSE* response)
 ******************************************************/
 static
 void initialize_buffer(){
-  memset(outputBuffer,'',sizeof(char)*OUTPUT_BUFFER_SIZE);
+  memset(outputBuffer,'0x0',sizeof(char)*OUTPUT_BUFFER_SIZE);
+}
+
+/*******************************************************
+                    Process Definitions
+********************************************************/
+PROCESS(generic_node_server, "Generic Node Server");
+AUTOSTART_PROCESSES(&generic_node_server);
+
+PROCESS_THREAD(generic_node_server, ev, data)
+{
+  PROCESS_BEGIN();
+  PRINTF("Initializing with COAP Server\n");
+
+  rest_init();
+  
+  //Now, activate corresponding resource
+#if PLATFORM_HAS_TEMPERATURE
+  SENSORS_ACTIVATE(temperature_sensor);
+  rest_activate_resource(&resource_stemperature);
+  PRINTF("Activated temperature sensors\n");
+#endif
+#if PLATFORM_HAS_HUMIDITY
+  rest_activate_resource(&resource_shumidity);
+  PRINTF("Activated humidity sensors\n");
+#endif
+#if PLATFORM_HAS_ACTUATOR_LEDS
+  SENSORS_ACTIVATE(&resource_aled);
+  PRINTF("Activated led actuators");
+#endif
+  PROCESS_END();
 }
