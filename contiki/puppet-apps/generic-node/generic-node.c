@@ -170,11 +170,10 @@ shumidity_handler(REQUEST* request, RESPONSE* response)
   rest_set_header_payload(response, outputBuffer, strlen(outputBuffer));
 }
 #endif
-#if PLATFORM_HAS_ACTUATOR_LEDS
+#if PLATFORM_HAS_LEDS
 void
 aleds_handler(REQUEST* request, RESPONSE* response)
 {
-  int index = 0;
   initialize_buffer();
 
   //TODO: Define actuator controls for LEDs.
@@ -185,7 +184,7 @@ aleds_handler(REQUEST* request, RESPONSE* response)
 ******************************************************/
 static
 void initialize_buffer(){
-  memset(outputBuffer,'0x0',sizeof(char)*OUTPUT_BUFFER_SIZE);
+  memset(outputBuffer,'\x0',sizeof(char)*OUTPUT_BUFFER_SIZE);
 }
 
 /*******************************************************
@@ -211,8 +210,8 @@ PROCESS_THREAD(generic_node_server, ev, data)
   rest_activate_resource(&resource_shumidity);
   PRINTF("Activated humidity sensors\n");
 #endif
-#if PLATFORM_HAS_ACTUATOR_LEDS
-  SENSORS_ACTIVATE(&resource_aled);
+#if PLATFORM_HAS_LEDS
+  rest_activate_resource(&resource_aleds);
   PRINTF("Activated led actuators");
 #endif
   PROCESS_END();
