@@ -20,14 +20,15 @@
 /*******************************************
               Some Macros
 ********************************************/
-#ifdef DEBUG
 #include <stdio.h>
+#if DEBUG
 #define PRINTF(...) printf(__VA_ARGS__)
 #else
 #define PRINTF(...)
 #endif
 
 #define SERVER_NODE(ipaddr) uip_ip6addr(ipaddr, 0xaaaa,0,0,0,0,0,0,1);
+#define MAX_PAYLOAD_LEN 100
 
 char outputBuffer[MAX_PAYLOAD_LEN];
 static char* proxy_uri = "http://sense.puppetme.com/record";
@@ -67,7 +68,7 @@ void stemperature_handler(REQUEST* request, RESPONSE* response)
 
   //TODO: Enhancement, store e-tag
   rest_set_header_content_type(response, TEXT_PLAIN);
-  rest_set_header_payload(response, outputBuffer, strlen(outputBuffer));
+  rest_set_response_payload(response,(uint8_t*)outputBuffer, strlen(outputBuffer));
 }
 
 /*******************************************
@@ -77,8 +78,10 @@ void ptemperature_initialize()
 {
   process_exit(&ptemperature_client);
   //Startup sensor collection.
-  SENSORS_ACTIVATE(temperature_sensor);
-  rest_activate_resource(&resource_stemperature);
+  #if PLATFORM_HAS_SHT11
+    SENSORS_ACTIVATE(temperature_sensor);
+    rest_activate_resource(&resource_stemperature);
+  #endif
   PRINTF("Temperature sensors initialized successfully");
   //Start client processes next.
   process_start(&ptemperature_client, NULL);
@@ -100,7 +103,7 @@ void send_data()
     coap_set_option(request, Option_Type_Proxy_Uri,
     sizeof(proxy_uri), (uint8_t*)proxy_uri);
 
-    data_size = serialize_packet(request, outputBuffer);
+    data_size = serialize_packet(request, (uint8_t*)outputBuffer);
 
     PRINTF("Now sending request to base station [");
     PRINTF(&client_conn->ripaddr);
@@ -130,13 +133,13 @@ PROCESS_THREAD(ptemperature_client, ev, data)
   udp_bind(client_conn, UIP_HTONS(LOCAL_PORT));
 
   PRINTF("Starting ptemperature client timer");
-  etimer_set(atimer, CLOCK_SECOND*POLL_INTERVAL);
+  etimer_set(&atimer, CLOCK_SECOND*POLL_INTERVAL);
   while(1)
   {
     PROCESS_WAIT_EVENT_UNTIL(etimer_expired(&atimer));
     PRINTF("Timer expired. Initiating temperature send.");
     send_data();
-    etimer_reset(atimer);
+    etimer_reset(&atimer);
   }
   PROCESS_END();
 }

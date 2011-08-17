@@ -9,7 +9,7 @@
 
 enum{
   OUTPUT_BUFFER_SIZE = 100,
-  POLL_INTERVAL = 7200, //Fires every 2 hrs.
+  POLL_INTERVAL = 20, //7200 Fires every 2 hrs.
 };
 
 

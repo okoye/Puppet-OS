@@ -11,6 +11,7 @@
 #include "net/uip-debug.h"
 #include "net/uip-ds6.h"
 #include "rest.h"
+#include "ptemperature.h"
 
 #define PRINTF(...) printf(__VA_ARGS__)
 #define PRINT6ADDR(addr) uip_debug_ipaddr_print(addr)
