@@ -41,6 +41,7 @@ typedef enum {
 typedef enum {
   Option_Type_Content_Type = 1,
   Option_Type_Max_Age = 2,
+  Option_Type_Proxy_Uri = 3,
   Option_Type_Etag = 4,
   Option_Type_Uri_Authority = 5,
   Option_Type_Location = 6,

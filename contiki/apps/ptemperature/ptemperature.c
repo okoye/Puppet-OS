@@ -18,7 +18,7 @@
 #endif
 
 /*******************************************
-              Debug Switch
+              Some Macros
 ********************************************/
 #ifdef DEBUG
 #include <stdio.h>
@@ -27,8 +27,16 @@
 #define PRINTF(...)
 #endif
 
-char outputBuffer[OUTPUT_BUFFER_SIZE];
+#define SERVER_NODE(ipaddr) uip_ip6addr(ipaddr, 0xaaaa,0,0,0,0,0,0,1);
+
+char outputBuffer[MAX_PAYLOAD_LEN];
 static char* proxy_uri = "http://sense.puppetme.com/record";
+static char* service_uri = "record";
+static unsigned int xact_id;
+static struct uip_udp_conn *client_conn;
+static uip_ipaddr_t server_ipaddr;
+
+PROCESS(ptemperature_client, "Temperature Sensor & Actuator");
 
 /*******************************************
               Resource Definitions
@@ -67,22 +75,38 @@ void stemperature_handler(REQUEST* request, RESPONSE* response)
 ********************************************/
 void ptemperature_initialize()
 {
+  process_exit(&ptemperature_client);
   //Startup sensor collection.
   SENSORS_ACTIVATE(temperature_sensor);
   rest_activate_resource(&resource_stemperature);
   PRINTF("Temperature sensors initialized successfully");
   //Start client processes next.
+  process_start(&ptemperature_client, NULL);
 }
 
 static
 void send_data()
 {
+  int data_size = 0;
   clear_buffer(outputBuffer);
   if(init_buffer(COAP_DATA_BUFF_SIZE)){
     coap_packet_t* request =\
     (coap_packet_t*)allocate_buffer(sizeof(coap_packet_t));
     init_packet(request);
     coap_set_method(request, COAP_POST);
+    request->tid = xact_id++;
+    request->type = MESSAGE_TYPE_CON;
+    coap_set_header_uri(request,service_uri);
+    coap_set_option(request, Option_Type_Proxy_Uri,
+    sizeof(proxy_uri), (uint8_t*)proxy_uri);
+
+    data_size = serialize_packet(request, outputBuffer);
+
+    PRINTF("Now sending request to base station [");
+    PRINTF(&client_conn->ripaddr);
+    PRINTF("]:%u/%s\n",REMOTE_PORT,service_uri);
+    uip_udp_packet_send(client_conn, outputBuffer, data_size);
+    delete_buffer();
   }
 }
 
@@ -96,15 +120,15 @@ void clear_buffer()
           Process Definitions
 *********************************************/
 
-PROCESS(ptemperature_client, "Temperature Sensor & Actuator");
 PROCESS_THREAD(ptemperature_client, ev, data)
 {
-  //retrieve temperature sensor value
-  //construct a COAP response.
-  //transmit the response using UDP.
-  //wait for timer to expire.
   static struct etimer atimer;
   PROCESS_BEGIN();
+  SERVER_NODE(&server_ipaddr);
+  PRINTF("Creating connection to server");
+  client_conn = udp_new(&server_ipaddr, UIP_HTONS(REMOTE_PORT), NULL);
+  udp_bind(client_conn, UIP_HTONS(LOCAL_PORT));
+
   PRINTF("Starting ptemperature client timer");
   etimer_set(atimer, CLOCK_SECOND*POLL_INTERVAL);
   while(1)

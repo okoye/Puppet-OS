@@ -4,6 +4,9 @@
  *@email: chuka@puppetme.com
  */
 
+#define REMOTE_PORT 5688
+#define LOCAL_PORT 8775
+
 enum{
   OUTPUT_BUFFER_SIZE = 100,
   POLL_INTERVAL = 7200, //Fires every 2 hrs.
