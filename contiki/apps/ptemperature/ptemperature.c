@@ -6,7 +6,7 @@
 
 #include <stdlib.h>
 #include <string.h>
-#include <contiki.h>
+#include "contiki.h"
 #include "ptemperature.h"
 #include "rest.h"
 #include "buffer.h"

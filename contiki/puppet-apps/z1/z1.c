@@ -9,8 +9,12 @@
 #include <contiki.h>
 #include "z1.h"
 #include "net/uip-debug.h"
+#include "net/uip-ds6.h"
+#include "rest.h"
 
-PROCESS(z1_test_device, "Z1 Test Device");
+#define PRINTF(...) printf(__VA_ARGS__)
+#define PRINT6ADDR(addr) uip_debug_ipaddr_print(addr)
+
 AUTOSTART_PROCESSES(&z1_test_device);
 
 static void
@@ -30,7 +34,7 @@ print_local_addresses(void)
   uint8_t state;
 
   PRINTF("Client IPv6 Addresses: ");
-  for(i=0, i<UIP_DS6_ADDR_NB; i++){
+  for(i=0; i<UIP_DS6_ADDR_NB; i++){
     state = uip_ds6_if.addr_list[i].state;
     if(uip_ds6_if.addr_list[i].isused &&
       (state == ADDR_TENTATIVE || state == ADDR_PREFERRED)){
@@ -43,16 +47,16 @@ print_local_addresses(void)
 PROCESS_THREAD(z1_test_device, ev, data)
 {
   PROCESS_BEGIN();
-
   PROCESS_PAUSE();
 
+  //Network Initialization Routines
   set_global_address();
-
   PRINTF("Started Z1 main\n");
-
   print_local_addresses();
-
-  //TODO: Initialize temperature
+  
+  //Program Initialization Routines
+  rest_init();
+  ptemperature_initialize();
 
   PROCESS_END();
 }

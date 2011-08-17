@@ -44,12 +44,13 @@
 
 #include <stdio.h>
 #include <string.h>
+#include "net/uip-debug.h"
 
 #define UDP_CLIENT_PORT 8775
 #define UDP_SERVER_PORT 5688
 
-#define DEBUG DEBUG_PRINT
-#include "net/uip-debug.h"
+#define PRINTF(...) printf(__VA_ARGS__)
+#define PRINT6ADDR(addr) uip_debug_ipaddr_print(addr)
 
 static struct uip_udp_conn *client_conn;
 static uip_ipaddr_t server_ipaddr;
