@@ -1,0 +1,4 @@
+Get full end to end commmunication working over IPv6 to base station then api.
+Test with firefox plugin.
+Write official tests.
+Build actual platform.
