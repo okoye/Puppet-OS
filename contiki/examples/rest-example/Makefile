@@ -1,7 +1,7 @@
 all: rest-server-example coap-client-example
 
 ifndef TARGET
-TARGET=sky
+TARGET=z1
 endif
 
 CONTIKI=../..

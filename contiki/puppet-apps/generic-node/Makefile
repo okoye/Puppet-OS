@@ -1,7 +1,7 @@
 all: generic-node
 
 ifndef TARGET
-TARGET=sky
+TARGET=z1
 endif
 
 CONTIKI=../../
@@ -14,6 +14,7 @@ WITH_COAP=1
 CFLAGS += -DPROJECT_CONF_H=\"project-conf.h\"
 
 CFLAGS += -DWITH_COAP
+
 APPS += rest-coap
 
 include $(CONTIKI)/Makefile.include
