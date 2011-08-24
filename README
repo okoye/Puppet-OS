@@ -1,3 +1,16 @@
 Puppet OS versions based on tinyos and contiki.
 
 Current working version is contiki.
+
+Brief Description:
+Puppet OS Base
+The contiki version provides support for a base sensing node that configures
+the actual device, reads sensor values and writes to proxy for upload to
+webservice. It also receives commands from proxy for execution on actual
+device.
+
+Puppet OS Proxy
+Serves as the border router between 802.15.4 networks and 802.11 networks. It
+also processes and relays messages from one web service to devices or from
+devices to web service. In the former, it translates HTTP->COAP and latter
+COAP->HTTP.

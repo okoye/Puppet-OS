@@ -1,0 +1,4 @@
+1. Implement ProxyService
+2. Add tests for proxy-uri option
+3. Implement ListenerService
+4. Implement Comet Listener Service.
