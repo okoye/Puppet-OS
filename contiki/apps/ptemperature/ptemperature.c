@@ -32,11 +32,11 @@
 
 char outputBuffer[MAX_PAYLOAD_LEN];
 static char* proxy_uri = "http://sense.puppetme.com/record";
-static char* service_uri = "record";
-static unsigned int xact_id;
+static char* service_uri = "proxy";
+static unsigned int xact_id; //message id
 static struct uip_udp_conn *client_conn;
 static uip_ipaddr_t server_ipaddr;
-
+static char* server_ip = "aaaa::1"; //TODO: Refactor
 PROCESS(ptemperature_client, "Temperature Sensor & Actuator");
 
 /*******************************************
@@ -100,6 +100,8 @@ void send_data()
     request->tid = xact_id++;
     request->type = MESSAGE_TYPE_CON;
     coap_set_header_uri(request,service_uri);
+    coap_set_option(request, Option_Type_Uri_Host,
+      sizeof(server_ip), (uint8_t*)server_ip);
     coap_set_option(request, Option_Type_Proxy_Uri,
     sizeof(proxy_uri), (uint8_t*)proxy_uri);
 
