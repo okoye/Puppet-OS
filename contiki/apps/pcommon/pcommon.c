@@ -15,7 +15,7 @@
 #define PRINTF(...) printf(__VA_ARGS__)
 #define PRINT6ADDR(addr) uip_debug_ipaddr_print(addr)
 
-static void
+void
 set_global_address(void)
 {
   uip_ipaddr_t ipaddr;
@@ -24,7 +24,7 @@ set_global_address(void)
   uip_ds6_addr_add(&ipaddr, 0, ADDR_AUTOCONF);
 }
 
-static void
+void
 print_local_addresses(void)
 {
   int i;

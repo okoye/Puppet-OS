@@ -1,8 +1,9 @@
 
 /*Sets global address of sensing device*/
-static void
+void
 set_global_address(void);
 
-static void
+/*Prints addresses assigned to this node*/
+void
 print_local_addresses(void);
 
