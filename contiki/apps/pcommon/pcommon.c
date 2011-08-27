@@ -16,7 +16,7 @@
 #define PRINT6ADDR(addr) uip_debug_ipaddr_print(addr)
 
 void
-set_global_address(void)
+set_node_addresses(void)
 {
   uip_ipaddr_t ipaddr;
   uip_ip6addr(&ipaddr, 0xaaaa,0,0,0,0,0,0,0);
@@ -25,7 +25,7 @@ set_global_address(void)
 }
 
 void
-print_local_addresses(void)
+print_node_addresses(void)
 {
   int i;
   uint8_t state;

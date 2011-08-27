@@ -5,9 +5,3 @@
  */
 
 PROCESS(z1_test_device, "Z1 Test Device");
-
-static void
-set_global_address(void);
-
-static void
-print_local_addresses(void);

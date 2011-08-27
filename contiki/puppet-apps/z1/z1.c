@@ -22,9 +22,9 @@ PROCESS_THREAD(z1_test_device, ev, data)
   PROCESS_PAUSE();
 
   //Network Initialization Routines
-  set_global_address();
+  set_node_addresses();
   PRINTF("Started Z1 main\n");
-  print_local_addresses();
+  print_node_addresses();
   
   //Program Initialization Routines
   rest_init();
