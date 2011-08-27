@@ -32,20 +32,20 @@ endPoint.bindDiscovery(opts.address)
 '''1-1 mapping on sensor api method definitions'''
 class ProxyService(coapy.link.LinkValue):
   
-  def _getHandler(uri,data=None):
+  def _getHandler(self, uri,data=None):
     if data:
       data = [lambda x: tuple(x.split('=')) for chunk in data.split(',')]
     print data
 
-  def _postHandler(uri,data=None):
+  def _postHandler(self, uri,data=None):
     args = dict()
     if data:
       data = [lambda x: tuple(x.split('=')) for chunk in data.split(',')]
     for key,value in data:
       args[key] = value
-    print args
+    print uri,args
 
-  def _putHandler(uri,data=None):
+  def _putHandler(self, uri,data=None):
     args = dict()
     if data:
       data = [lambda x: tuple(x.split('=')) for chunk in data]
@@ -63,12 +63,12 @@ class ProxyService(coapy.link.LinkValue):
               code=coapy.BAD_REQUEST)
       return record.ack(msg)
     else:
-      if rcv_msg.code == coap.GET:
-        resp = self._getHandler(proxy_url,rcv_msg.payload)
-      elif rcv_msg.code == coap.POST:
-        resp = self._postHandler(proxy_url,rcv_msg.payload)
-      elif rcv_msg.code == coap.PUT:
-        resp = self._putHandler(proxy_url,rcv_msg.payload)
+      if rcv_msg.code == coapy.GET:
+        resp = self._getHandler(proxy_url.value,rcv_msg.payload)
+      elif rcv_msg.code == coapy.POST:
+        resp = self._postHandler(proxy_url.value,rcv_msg.payload)
+      elif rcv_msg.code == coapy.PUT:
+        resp = self._putHandler(proxy_url.value,rcv_msg.payload)
       else:
         record.ack(coapy.connection.Message(coapy.connection.Message.ACK,
           code=coapy.METHOD_NOT_ALLOWED))
@@ -130,13 +130,13 @@ while True:
     continue
   if opts.debug:
     print 'Message from %s: %s'%(record.remote,record.message)
-  uri = record.message.findOption(coap.options.UriPath)
+  uri = record.message.findOption(coapy.options.UriPath)
   if not uri:
     continue
   else:
     service = services.lookup(uri.value)
     if opts.debug:
-      print 'Executing %s for %s'%(uri,service)
+      print 'Executing %s for %s'%(uri.value,service)
     if service is None:
       record.reset()
       continue
