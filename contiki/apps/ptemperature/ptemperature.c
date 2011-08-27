@@ -101,9 +101,9 @@ void send_data()
     request->type = MESSAGE_TYPE_CON;
     coap_set_header_uri(request,service_uri);
     coap_set_option(request, Option_Type_Uri_Host,
-      sizeof(server_ip), (uint8_t*)server_ip);
+      sizeof(char)*strlen(server_ip), (uint8_t*)server_ip);
     coap_set_option(request, Option_Type_Proxy_Uri,
-    sizeof(proxy_uri), (uint8_t*)proxy_uri);
+    sizeof(char)*strlen(proxy_uri), (uint8_t*)proxy_uri);
 
     data_size = serialize_packet(request, (uint8_t*)outputBuffer);
 
