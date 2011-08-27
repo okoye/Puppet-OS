@@ -15,5 +15,6 @@ CFLAGS += -DWITH_COAP
 
 APPS += rest-coap
 APPS += ptemperature
+APPS += pcommon
 
 include $(CONTIKI)/Makefile.include
