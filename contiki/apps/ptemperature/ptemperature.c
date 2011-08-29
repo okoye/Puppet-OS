@@ -64,7 +64,7 @@ void stemperature_handler(REQUEST* request, RESPONSE* response)
 
   read_temperature_sensor(&temperature);
   PRINTF("New temperature value %u read.",temperature);
-  sprintf(outputBuffer,"%u",temperature);
+  sprintf(outputBuffer,"temperature=%u",temperature);
 
   //TODO: Enhancement, store e-tag
   rest_set_header_content_type(response, TEXT_PLAIN);

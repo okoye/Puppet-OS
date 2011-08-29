@@ -7,8 +7,8 @@ import coapy.connection
 import coapy.options
 import coapy.link
 import optparse, socket
-from urllib import urlopen
 from urllib import urlencode
+from httplib import HTTPConnection
 
 #Optional args include:
 parser = optparse.OptionParser()
@@ -28,6 +28,7 @@ if opts.debug:
   print 'binding to %s'%str(bindAddr)
 endPoint.bind(bindAddr)
 endPoint.bindDiscovery(opts.address)
+
 
 '''1-1 mapping on sensor api method definitions'''
 class ProxyService(coapy.link.LinkValue):
