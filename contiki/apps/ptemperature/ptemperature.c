@@ -9,13 +9,11 @@
 #include "contiki.h"
 #include "ptemperature.h"
 #include "rest.h"
-#include "buffer.h"
+//#include "buffer.h"
 /*******************************************
     Temperature Specific Include Files
 ********************************************/
-#if PLATFORM_HAS_SHT11
-#include "dev/temperature-sensor.h"
-#endif
+#include "dev/sht11.h"
 
 /*******************************************
               Some Macros
@@ -28,9 +26,10 @@
 #endif
 
 #define SERVER_NODE(ipaddr) uip_ip6addr(ipaddr, 0xaaaa,0,0,0,0,0,0,1);
-#define MAX_PAYLOAD_LEN 100
+#define MAX_PAYLOAD_LEN 20
 
 char outputBuffer[MAX_PAYLOAD_LEN];
+char payload_buf[MAX_PAYLOAD_LEN];
 //static char* proxy_uri = "http://devices.puppetme.com/record";
 static char* proxy_uri = "http://localhost:8080/reading";
 static char* service_uri = "proxy";
@@ -51,12 +50,7 @@ RESOURCE(stemperature, METHOD_GET, "sensors/temperature");
 static
 void read_temperature_sensor(unsigned* temp)
 {
-  #if PLATFORM_HAS_SHT11
-    *temp = -39.60 + 0.01 * temperature_sensor.value(TEMPERATURE_SENSOR);
-  #endif
-  #ifndef PLATFORM_HAS_SHT11
-    *temp = 0; //Platform has no temp sensor at all
-  #endif
+    *temp = -39.60 + 0.01 * sht11_temp();
 }
 
 void stemperature_handler(REQUEST* request, RESPONSE* response)
@@ -79,20 +73,31 @@ void ptemperature_initialize()
 {
   process_exit(&ptemperature_client);
   //Startup sensor collection.
-  #if PLATFORM_HAS_SHT11
-    SENSORS_ACTIVATE(temperature_sensor);
-    rest_activate_resource(&resource_stemperature);
-  #endif
+  sht11_init();
+  rest_activate_resource(&resource_stemperature);
   PRINTF("Temperature sensors initialized successfully");
   //Start client processes next.
   process_start(&ptemperature_client, NULL);
 }
 
 static
+void generate_payload(char* buf, unsigned data)
+{
+  int index = 0;
+  index += sprintf(buf,"device_id=%s,1=%u","2",data);
+}
+
+static
 void send_data()
 {
   int data_size = 0;
+  unsigned temperature;
+
+  read_temperature_sensor(&temperature);
   clear_buffer(outputBuffer);
+  clear_buffer(payload_buf);
+  generate_payload(payload_buf,temperature);
+
   if(init_buffer(COAP_DATA_BUFF_SIZE)){
     coap_packet_t* request =\
     (coap_packet_t*)allocate_buffer(sizeof(coap_packet_t));
@@ -105,7 +110,8 @@ void send_data()
       sizeof(char)*strlen(server_ip), (uint8_t*)server_ip);
     coap_set_option(request, Option_Type_Proxy_Uri,
     sizeof(char)*strlen(proxy_uri), (uint8_t*)proxy_uri);
-
+    coap_set_payload(request,(uint8_t*)payload_buf,
+    sizeof(char)*strlen(payload_buf));
     data_size = serialize_packet(request, (uint8_t*)outputBuffer);
 
     PRINTF("Now sending request to base station [");

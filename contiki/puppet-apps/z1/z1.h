@@ -5,3 +5,5 @@
  */
 
 PROCESS(z1_test_device, "Z1 Test Device");
+
+#define PLATFORM_HAS_SHT11 1

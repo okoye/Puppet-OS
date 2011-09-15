@@ -39,11 +39,7 @@ class ProxyService(coapy.link.LinkValue):
 
   def _postHandler(self, uri,data=None):
     args = dict()
-    if data:
-      data = [lambda x: tuple(x.split('=')) for chunk in data.split(',')]
-    for key,value in data:
-      args[key] = value
-    print uri,args
+    print data
 
   def _putHandler(self, uri,data=None):
     args = dict()

@@ -20,5 +20,9 @@ void ptemperature_initialize();
 static
 void send_data();
 
+/*Delete currently allocated buffer*/
 static
 void clear_buffer();
+
+static
+void generate_payload(char* buf, unsigned data);
