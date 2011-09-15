@@ -1,5 +1,4 @@
-#Stateless proxy for COAP
-#The proxy mimicks the methods available on the webserver
+#Stateless Router for COAP-based Applications
 #and provides some extra functions.
 #@author: Chuka
 

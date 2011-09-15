@@ -31,7 +31,8 @@
 #define MAX_PAYLOAD_LEN 100
 
 char outputBuffer[MAX_PAYLOAD_LEN];
-static char* proxy_uri = "http://sense.puppetme.com/record";
+//static char* proxy_uri = "http://devices.puppetme.com/record";
+static char* proxy_uri = "http://localhost:8080/reading";
 static char* service_uri = "proxy";
 static unsigned int xact_id; //message id
 static struct uip_udp_conn *client_conn;
