@@ -7,12 +7,13 @@
 #include <stdlib.h>
 #include <string.h>
 #include "contiki.h"
-#include "ptemperature.h"
+#include "psensorlogging.h"
 /*******************************************
     Temperature Specific Include Files
 ********************************************/
 #include "dev/sht11.h"
-
+#include "rest.h"
+#include "buffer.h"
 /*******************************************
               Some Macros
 ********************************************/
@@ -40,7 +41,7 @@ PROCESS(ptemperature_client, "Temperature Sensor & Actuator");
 /*******************************************
               Resource Definitions
 ********************************************/
-RESOURCE(stemperature, METHOD_GET, "sensors/temperature");
+//RESOURCE(stemperature, METHOD_GET, "sensors/temperature");
 
 /*******************************************
             Resource Handlers

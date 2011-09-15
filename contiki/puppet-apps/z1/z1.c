@@ -4,8 +4,6 @@
  *@email: chuka@puppetme.com
  */
 
-#include <stdlib.h>
-#include <string.h>
 #include <contiki.h>
 #include "z1.h"
 #include "rest.h"

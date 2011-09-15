@@ -9,11 +9,10 @@
 #include "contiki.h"
 #include "ptemperature.h"
 #include "rest.h"
-//#include "buffer.h"
+#include "buffer.h"
 /*******************************************
     Temperature Specific Include Files
 ********************************************/
-#include "dev/sht11.h"
 
 /*******************************************
               Some Macros
@@ -26,12 +25,12 @@
 #endif
 
 #define SERVER_NODE(ipaddr) uip_ip6addr(ipaddr, 0xaaaa,0,0,0,0,0,0,1);
-#define MAX_PAYLOAD_LEN 20
+#define MAX_PAYLOAD_LEN 100
 
 char outputBuffer[MAX_PAYLOAD_LEN];
 char payload_buf[MAX_PAYLOAD_LEN];
-//static char* proxy_uri = "http://devices.puppetme.com/record";
-static char* proxy_uri = "http://localhost:8080/reading";
+static char* proxy_uri = "http://devices.puppetme.com/record";
+//static char* proxy_uri = "reading";
 static char* service_uri = "proxy";
 static unsigned int xact_id; //message id
 static struct uip_udp_conn *client_conn;
@@ -42,7 +41,7 @@ PROCESS(ptemperature_client, "Temperature Sensor & Actuator");
 /*******************************************
               Resource Definitions
 ********************************************/
-RESOURCE(stemperature, METHOD_GET, "sensors/temperature");
+//RESOURCE(stemperature, METHOD_GET, "sensors/temperature");
 
 /*******************************************
             Resource Handlers
@@ -50,21 +49,22 @@ RESOURCE(stemperature, METHOD_GET, "sensors/temperature");
 static
 void read_temperature_sensor(unsigned* temp)
 {
-    *temp = -39.60 + 0.01 * sht11_temp();
+    //*temp = -39.60 + 0.01 * sht11_temp();
+    *temp = 0;
 }
 
-void stemperature_handler(REQUEST* request, RESPONSE* response)
-{
-  unsigned temperature;
+//void stemperature_handler(REQUEST* request, RESPONSE* response)
+//{
+//  unsigned temperature;
 
-  read_temperature_sensor(&temperature);
-  PRINTF("New temperature value %u read.",temperature);
-  sprintf(outputBuffer,"temperature=%u",temperature);
+//  read_temperature_sensor(&temperature);
+//  PRINTF("New temperature value %u read.",temperature);
+//  sprintf(outputBuffer,"temperature=%u",temperature);
 
   //TODO: Enhancement, store e-tag
-  rest_set_header_content_type(response, TEXT_PLAIN);
-  rest_set_response_payload(response,(uint8_t*)outputBuffer, strlen(outputBuffer));
-}
+//  rest_set_header_content_type(response, TEXT_PLAIN);
+//  rest_set_response_payload(response,(uint8_t*)outputBuffer, strlen(outputBuffer));
+//}
 
 /*******************************************
             Function Implementation
@@ -73,8 +73,7 @@ void ptemperature_initialize()
 {
   process_exit(&ptemperature_client);
   //Startup sensor collection.
-  sht11_init();
-  rest_activate_resource(&resource_stemperature);
+  //rest_activate_resource(&resource_stemperature);
   PRINTF("Temperature sensors initialized successfully");
   //Start client processes next.
   process_start(&ptemperature_client, NULL);
@@ -94,8 +93,7 @@ void send_data()
   unsigned temperature;
 
   read_temperature_sensor(&temperature);
-  clear_buffer(outputBuffer);
-  clear_buffer(payload_buf);
+  clear_buffer();
   generate_payload(payload_buf,temperature);
 
   if(init_buffer(COAP_DATA_BUFF_SIZE)){
@@ -140,6 +138,7 @@ PROCESS_THREAD(ptemperature_client, ev, data)
   PRINTF("Creating connection to server");
   client_conn = udp_new(&server_ipaddr, UIP_HTONS(REMOTE_PORT), NULL);
   udp_bind(client_conn, UIP_HTONS(LOCAL_PORT));
+  //sht11_init();
 
   PRINTF("Starting ptemperature client timer");
   etimer_set(&atimer, CLOCK_SECOND*POLL_INTERVAL);
