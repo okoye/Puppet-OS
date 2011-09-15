@@ -52,10 +52,12 @@ class ProxyService(coapy.link.LinkValue):
       for key,value in args_array:
         args[key] = value
       f_params = urlencode(args)      
-      self._api.request('POST',uri,f_params)
+      self._api.request('POST','/'+uri,f_params)
       res = self._api.getresponse()
-      print res.status
+      print res.status, uri, f_params
       #TODO csv = self._jsonToCSV(loads(res.read())) 
+    except ValueError:
+      print 'parsing error.'
     except Exception as e:
       pass #TODO: write to err logs.
 

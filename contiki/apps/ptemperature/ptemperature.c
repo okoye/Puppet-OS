@@ -29,8 +29,8 @@
 
 char outputBuffer[MAX_PAYLOAD_LEN];
 char payload_buf[MAX_PAYLOAD_LEN];
-static char* proxy_uri = "http://devices.puppetme.com/record";
-//static char* proxy_uri = "reading";
+//static char* proxy_uri = "http://devices.puppetme.com/record";
+static char* proxy_uri = "reading";
 static char* service_uri = "proxy";
 static unsigned int xact_id; //message id
 static struct uip_udp_conn *client_conn;
@@ -83,7 +83,7 @@ static
 void generate_payload(char* buf, unsigned data)
 {
   int index = 0;
-  index += sprintf(buf,"device_id=%s,1=%u","2",data);
+  index += sprintf(buf,"device_id=%s,1=%u,puppet_id=%s","2",data,"200");
 }
 
 static
