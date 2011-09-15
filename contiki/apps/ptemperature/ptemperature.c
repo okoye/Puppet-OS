@@ -13,7 +13,7 @@
 /*******************************************
     Temperature Specific Include Files
 ********************************************/
-
+#include "dev/sht11.h"
 /*******************************************
               Some Macros
 ********************************************/
@@ -50,7 +50,8 @@ static
 void read_temperature_sensor(unsigned* temp)
 {
     //*temp = -39.60 + 0.01 * sht11_temp();
-    *temp = 0;
+    *temp = sht11_temp();
+    //*temp = 0;
 }
 
 //void stemperature_handler(REQUEST* request, RESPONSE* response)
@@ -138,7 +139,7 @@ PROCESS_THREAD(ptemperature_client, ev, data)
   PRINTF("Creating connection to server");
   client_conn = udp_new(&server_ipaddr, UIP_HTONS(REMOTE_PORT), NULL);
   udp_bind(client_conn, UIP_HTONS(LOCAL_PORT));
-  //sht11_init();
+  sht11_init();
 
   PRINTF("Starting ptemperature client timer");
   etimer_set(&atimer, CLOCK_SECOND*POLL_INTERVAL);
