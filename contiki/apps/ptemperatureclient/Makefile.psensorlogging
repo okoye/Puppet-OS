@@ -1,0 +1,2 @@
+psensorlogging_src = psensorlogging.c
+#TODO: Add ptemperature_dsc
