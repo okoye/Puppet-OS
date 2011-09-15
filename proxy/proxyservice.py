@@ -32,6 +32,14 @@ endPoint.bindDiscovery(opts.address)
 '''1-1 mapping on sensor api method definitions'''
 class ProxyService(coapy.link.LinkValue):
   
+  _api = HTTPConnection('devices.puppetme.com')
+
+  def _jsonToCSV(self, data):
+    '''
+    Converts a document from json to csv values.
+    '''
+    pass
+
   def _getHandler(self, uri,data=None):
     if data:
       data = [lambda x: tuple(x.split('=')) for chunk in data.split(',')]
@@ -39,7 +47,17 @@ class ProxyService(coapy.link.LinkValue):
 
   def _postHandler(self, uri,data=None):
     args = dict()
-    print data
+    try:
+      args_array =[tuple(pair.split('=')) for pair in data.encode('utf-8','ignore').split(',')]
+      for key,value in args_array:
+        args[key] = value
+      f_params = urlencode(args)      
+      self._api.request('POST',uri,f_params)
+      res = self._api.getresponse()
+      print res.status
+      #TODO csv = self._jsonToCSV(loads(res.read())) 
+    except Exception as e:
+      pass #TODO: write to err logs.
 
   def _putHandler(self, uri,data=None):
     args = dict()
